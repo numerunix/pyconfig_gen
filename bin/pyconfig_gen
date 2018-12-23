@@ -1,0 +1,10 @@
+#!/usr/bin/env python3
+#
+# Trivial script to run the pyconfig_gen PyQt5 main dialog.
+#
+# Copyright (c) 2018 sakaki <sakaki@deciban.com>
+# License: GPL v3+
+# NO WARRANTY
+
+from pyconfig_gen import main_dialog
+main_dialog.main()

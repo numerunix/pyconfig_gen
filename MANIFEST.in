@@ -1,0 +1,5 @@
+include *.md
+include LICENSE
+recursive-include pyconfig_gen *.ui *.qrc
+recursive-include pixmaps *.png
+
