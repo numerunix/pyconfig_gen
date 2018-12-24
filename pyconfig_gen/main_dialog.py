@@ -642,6 +642,7 @@ without (e.g.) a visible display.</p>
                 # backup booted-with version, promote the pending version
                 shutil.copyfile(CONFIG_PATHNAME, CONFIG_OLD_PATHNAME)
                 shutil.move(CONFIG_TBC_PATHNAME, CONFIG_PATHNAME)
+                self.do_revert()
 
     def check_running_as_root(self):
         if not os.geteuid() == 0:
