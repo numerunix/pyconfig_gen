@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name = "pyconfig_gen",
-    version = "1.0.0",
+    version = "1.0.1",
     author = "sakaki",
     author_email = "sakaki@deciban.com",
     description = "GUI editor for /boot/config.txt on RPi3 SBCs",
