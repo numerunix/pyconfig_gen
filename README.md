@@ -1,6 +1,6 @@
-# pyconfig_dev
+# pyconfig_gen
 
-**pyconfig_dev** is a simple GUI utility to edit the /boot/config.txt file
+**pyconfig_gen** is a simple GUI utility to edit the /boot/config.txt file
 for RPi3 computers, targeting Gentoo Linux.
 
 Screenshot:
