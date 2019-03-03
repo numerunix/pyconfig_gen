@@ -26,6 +26,7 @@ BREAK_REBOOT_NOTIFIED = "break_reboot_notified"
 BASE_TITLE = "RPi3 Configuration"
 SAVE_NEEDED = " (Unsaved Changes)"
 CMAS = [256, 192, 128, 96, 64, 0]
+GPUS = [256, 192, 128, 96, 64, 32, 16, 0]
 
 
 class TimeoutMessageBox(QMessageBox):
@@ -75,6 +76,7 @@ class MainDialog(QDialog):
     config_hdmi_boost = None
     disable_overscan = None
     cma_vc4 = None
+    gpu_vc4 = None
     overscan_left = None
     overscan_right = None
     overscan_top = None
@@ -86,6 +88,7 @@ class MainDialog(QDialog):
     dtparam_i2s = None
     dtparam_audio = None
     dtoverlay_disable_bt = None
+    dtparam_camera = None
 
     valid_cea_modes = []
     valid_cea_modes_txt = []
@@ -145,10 +148,15 @@ class MainDialog(QDialog):
             try:
                 self.cma_vc4 = CMAS.index(int(m.group(3)))
             except (ValueError, TypeError):
-                self.cma_vc4 = 6
+                self.cma_vc4 = CMAS.index(0)
         else:
             self.dtoverlay_vc4 = 2
-            self.cma_vc4 = 6
+            self.cma_vc4 = CMAS.index(0)
+        v = get_config_var("gpu_mem", self.tmp_pathname, 9999)
+        try:
+            self.gpu_vc4 = GPUS.index(v)
+        except (ValueError, TypeError):
+            self.gpu_vc4 = GPUS.index(0)
         v = get_config_var("hdmi_force_hotplug", self.tmp_pathname, 0)
         self.hdmi_force_hotplug = v == 1
         v = get_config_var("hdmi_ignore_edid", self.tmp_pathname,
@@ -185,10 +193,28 @@ class MainDialog(QDialog):
         v = get_config_var("dtoverlay=pi3-disable-bt", self.tmp_pathname,
                            None, False)
         self.dtoverlay_disable_bt = v is not None
+        v = get_config_var("start_x", self.tmp_pathname, 0)
+        self.dtparam_camera = v == 1
+
+    def dirty_check(self):
+        if config_files_differ_materially(self.tmp_pathname, CONFIG_PATHNAME,
+                                          print_debug = self.use_fake_data):
+            self.setWindowTitle(BASE_TITLE + SAVE_NEEDED)
+            self.dirty = True
+        else:
+            self.setWindowTitle(BASE_TITLE)
+            self.dirty = False
+        if self.dirty:
+            self.reset_b.setEnabled(True)
+            self.ok_b.setEnabled(True)
+        else:
+            self.reset_b.setEnabled(False)
+            self.ok_b.setEnabled(False)
 
     def populate_gui_from_state(self, is_initial = False):
         self.ui.graphics_driver_cb.setCurrentIndex(self.dtoverlay_vc4)
         self.ui.cma_cb.setCurrentIndex(self.cma_vc4)
+        self.ui.gpu_cb.setCurrentIndex(self.gpu_vc4)
         self.ui.cma_cb.setEnabled(0 <= self.dtoverlay_vc4 <= 1)
         self.ui.safe_mode_rb.setChecked(self.hdmi_safe)
         self.ui.normal_mode_rb.setChecked(not self.hdmi_safe)
@@ -227,25 +253,15 @@ class MainDialog(QDialog):
         self.ui.i2c_cb.setChecked(self.dtparam_i2c)
         self.ui.i2s_cb.setChecked(self.dtparam_i2s)
         self.ui.audio_cb.setChecked(self.dtparam_audio)
+        self.ui.camera_cb.setChecked(self.dtparam_camera)
         self.ui.bluetooth_cb.setChecked(not self.dtoverlay_disable_bt)
 
-        if config_files_differ_materially(self.tmp_pathname, CONFIG_PATHNAME,
-                                          print_debug = self.use_fake_data):
-            self.setWindowTitle(BASE_TITLE + SAVE_NEEDED)
-            self.dirty = True
-        else:
-            self.setWindowTitle(BASE_TITLE)
-            self.dirty = False
-        if self.dirty:
-            self.reset_b.setEnabled(True)
-            self.ok_b.setEnabled(True)
-        else:
-            self.reset_b.setEnabled(False)
-            self.ok_b.setEnabled(False)
+        self.dirty_check()
 
     def populate_state_from_gui(self, is_initial = False):
         self.dtoverlay_vc4 = self.ui.graphics_driver_cb.currentIndex()
         self.cma_vc4 = self.ui.cma_cb.currentIndex()
+        self.gpu_vc4 = self.ui.gpu_cb.currentIndex()
         self.hdmi_safe = self.ui.safe_mode_rb.isChecked()
         self.hdmi_group = self.ui.hdmi_group_cb.currentIndex()
         try:
@@ -266,6 +282,7 @@ class MainDialog(QDialog):
         self.dtparam_i2c = self.ui.i2c_cb.isChecked()
         self.dtparam_i2s = self.ui.i2s_cb.isChecked()
         self.dtparam_audio = self.ui.audio_cb.isChecked()
+        self.dtparam_camera = self.ui.camera_cb.isChecked()
         self.dtoverlay_disable_bt = not self.ui.bluetooth_cb.isChecked()
 
     def populate_config_from_state(self, is_initial = False):
@@ -279,6 +296,7 @@ class MainDialog(QDialog):
             if self.cma_vc4 < 5:
                 v += f",cma-{CMAS[self.cma_vc4]}"
             set_config_var("dtoverlay=vc4-", v, self.tmp_pathname, True, False)
+        set_or_comment_config_var("gpu_mem", GPUS[self.gpu_vc4], 0, self.tmp_pathname)
         if self.hdmi_safe:
             set_config_var("hdmi_safe", "1", self.tmp_pathname)
             # comment out anything else related
@@ -346,6 +364,9 @@ class MainDialog(QDialog):
                 set_config_var("dtoverlay=pi3-disable-bt", "", self.tmp_pathname, "off", False)
             else:
                 comment_config_var("dtoverlay=pi3-disable-bt", self.tmp_pathname)
+            set_or_comment_config_var("start_x",
+                                      1 if self.dtparam_camera else 0,
+                                      0, self.tmp_pathname)
 
     def update_everything(self):
         if not self.in_update:
@@ -413,6 +434,20 @@ class MainDialog(QDialog):
         # generic handler
         self.gui_changed()
 
+    def camera_cb_value_changed(self, v):
+        if self.ui.camera_cb.isChecked() and GPUS[self.gpu_vc4] < 128:
+            if not self.in_update:
+                QMessageBox.warning(self, self.windowTitle(),
+"""
+
+<p><strong>Warning:</strong> your current GPU memory allocation is too low to use the camera.</p>
+
+<p>Force-setting 128 MiB GPU memory allocation instead.</p>
+
+""")
+                self.ui.gpu_cb.setCurrentIndex(GPUS.index(128))
+        self.gui_changed()
+
     def gui_bool_changed(self, b):
         # generic handler
         self.gui_changed()
@@ -468,10 +503,7 @@ again from that which this session was booted under.</p>
         self.ui.hdmi_mode_cb.addItems(self.valid_modes_txt)
         self.update_everything()
 
-    def hdmi_ignore_edid_changed(self, b):
-        # repopulate the HDMI mode lists with sane defaults,
-        # if ignoring EDID...
-        self.get_system_data(fallback = self.ui.hdmi_ignore_edid_cb.isChecked())
+    def sync_fallback_lists(self):
         # force dropdowns to update with new list
         old_hdmi_mode = self.hdmi_mode
         self.hdmi_group_changed(self.hdmi_group)
@@ -479,6 +511,12 @@ again from that which this session was booted under.</p>
         self.hdmi_mode = old_hdmi_mode
         self.populate_gui_from_state()
         self.update_everything()
+
+    def hdmi_ignore_edid_changed(self, b):
+        # repopulate the HDMI mode lists with sane defaults,
+        # if ignoring EDID...
+        self.get_system_data(fallback = self.ui.hdmi_ignore_edid_cb.isChecked())
+        self.sync_fallback_lists()
 
     def button_bar_button_clicked(self, button):
         if(button.text() == "Revert"):
@@ -566,6 +604,7 @@ and your last-known-good config is again in force.</p>
         self.ui.hdmi_mode_cb.setToolTip(self.ui.hdmi_mode_lb.toolTip())
         self.ui.graphics_driver_cb.setToolTip(self.ui.graphics_driver_lb.toolTip())
         self.ui.cma_cb.setToolTip(self.ui.cma_lb.toolTip())
+        self.ui.gpu_cb.setToolTip(self.ui.gpu_lb.toolTip())
         self.ui.config_hdmi_boost_sb.setToolTip(self.ui.config_hdmi_boost_lb.toolTip())
         self.ui.overscan_left_sb.setToolTip(self.ui.overscan_left_lb.toolTip())
         self.ui.overscan_right_sb.setToolTip(self.ui.overscan_right_lb.toolTip())
@@ -719,10 +758,11 @@ without (e.g.) a visible display.</p>
             # nothing to do
             self.sys_exit(0)
         self.make_local_config_dir()
-        if self.using_fallback_hdmi_data and not self.hdmi_ignore_edid:
-            self.show_fallback_popup()
-            self.ui.hdmi_ignore_edid_cb.setChecked(True)
-            self.update_everything()
+        #if self.using_fallback_hdmi_data and not self.hdmi_ignore_edid:
+            #self.show_fallback_popup()
+            #self.ui.hdmi_ignore_edid_cb.setChecked(True)
+            #self.update_everything()
+            #self.sync_fallback_lists()
         self.show()
         if self.first_run:
             self.show_first_run_popup()

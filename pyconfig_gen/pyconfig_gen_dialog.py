@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'pyconfig_gen_dialog.ui'
 #
-# Created by: PyQt5 UI code generator 5.10.1
+# Created by: PyQt5 UI code generator 5.12.dev1812231618
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -67,6 +67,21 @@ class Ui_MainDialog(object):
         self.cma_cb.addItem("")
         self.cma_cb.addItem("")
         self.graphics_driver_gb.addWidget(self.cma_cb)
+        self.gpu_lb = QtWidgets.QLabel(self.display_tab)
+        self.gpu_lb.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.gpu_lb.setObjectName("gpu_lb")
+        self.graphics_driver_gb.addWidget(self.gpu_lb)
+        self.gpu_cb = QtWidgets.QComboBox(self.display_tab)
+        self.gpu_cb.setObjectName("gpu_cb")
+        self.gpu_cb.addItem("")
+        self.gpu_cb.addItem("")
+        self.gpu_cb.addItem("")
+        self.gpu_cb.addItem("")
+        self.gpu_cb.addItem("")
+        self.gpu_cb.addItem("")
+        self.gpu_cb.addItem("")
+        self.gpu_cb.addItem("")
+        self.graphics_driver_gb.addWidget(self.gpu_cb)
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Minimum)
         self.graphics_driver_gb.addItem(spacerItem1)
         self.verticalLayout_4.addLayout(self.graphics_driver_gb)
@@ -236,6 +251,9 @@ class Ui_MainDialog(object):
         self.audio_cb = QtWidgets.QCheckBox(self.main_interfaces_gb)
         self.audio_cb.setObjectName("audio_cb")
         self.verticalLayout_6.addWidget(self.audio_cb)
+        self.camera_cb = QtWidgets.QCheckBox(self.main_interfaces_gb)
+        self.camera_cb.setObjectName("camera_cb")
+        self.verticalLayout_6.addWidget(self.camera_cb)
         self.verticalLayout_5.addWidget(self.main_interfaces_gb)
         spacerItem5 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_5.addItem(spacerItem5)
@@ -272,6 +290,8 @@ class Ui_MainDialog(object):
         self.bluetooth_cb.stateChanged['int'].connect(MainDialog.gui_value_changed)
         self.i2s_cb.stateChanged['int'].connect(MainDialog.gui_value_changed)
         self.audio_cb.stateChanged['int'].connect(MainDialog.gui_value_changed)
+        self.gpu_cb.currentIndexChanged['int'].connect(MainDialog.gui_value_changed)
+        self.camera_cb.stateChanged['int'].connect(MainDialog.camera_cb_value_changed)
         QtCore.QMetaObject.connectSlotsByName(MainDialog)
         MainDialog.setTabOrder(self.tabWidget, self.graphics_driver_cb)
         MainDialog.setTabOrder(self.graphics_driver_cb, self.cma_cb)
@@ -298,12 +318,12 @@ class Ui_MainDialog(object):
     def retranslateUi(self, MainDialog):
         _translate = QtCore.QCoreApplication.translate
         MainDialog.setWindowTitle(_translate("MainDialog", "RPi3 Configuration"))
-        self.graphics_driver_lb.setToolTip(_translate("MainDialog", "<html><head/><body><p><span style=\" font-weight:600;\">Graphics driver</span></p><p>Choose which display driver you\'d like from this dropdown. The three options are:</p><ol style=\"margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;\"><li style=\" margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">fkms-v3d</span>: an accelerated, GL-based graphics driver, using DispmanX for composition (\'fake\' KMS); recommended for most users, and the shipped default on the image;</li><li style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">kms-v3d</span>: as above, but using the kernel KMS driver for composition (\'full\' KMS); and</li><li style=\" margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">framebuffer</span>: fallback, unaccelerated graphics driver.</li></ol><p>Please note that currently, MMAL and OpenMAX IL access to the GPU is <span style=\" font-style:italic;\">unavailable</span> when booted in 64-bit mode (this issue is common to all 64-bit distros for the RPi3, not just Gentoo).</p></body></html>"))
+        self.graphics_driver_lb.setToolTip(_translate("MainDialog", "<html><head/><body><p><span style=\" font-weight:600;\">Graphics driver</span></p><p>Choose which display driver you\'d like from this dropdown. The three options are:</p><ol style=\"margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;\"><li style=\" margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">fkms-v3d</span>: an accelerated, GL-based graphics driver, using DispmanX for composition (\'fake\' KMS); recommended for most users (required for audio out on the Pi-Top), and the shipped default on the image;</li><li style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">kms-v3d</span>: as above, but using the kernel KMS driver for composition (\'full\' KMS); may be used by non-Pi-Top users (if display manager compositing is turned off); and</li><li style=\" margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600;\">framebuffer</span>: fallback, unaccelerated graphics driver.</li></ol><p>Please note that currently, MMAL and OpenMAX IL access to the GPU is <span style=\" font-style:italic;\">unavailable</span> when booted into a 64-bit userspace (this issue is common to all 64-bit distros for the RPi3, not just Gentoo). </p><p>However, as of kernels &gt;= 4.19, camera and video codec access <span style=\" font-style:italic;\">are</span> available in 64-bit mode, via v4l2.</p></body></html>"))
         self.graphics_driver_lb.setText(_translate("MainDialog", "Graphics driver:"))
         self.graphics_driver_cb.setItemText(0, _translate("MainDialog", "fkms-v3d"))
         self.graphics_driver_cb.setItemText(1, _translate("MainDialog", "kms-v3d"))
         self.graphics_driver_cb.setItemText(2, _translate("MainDialog", "framebuffer"))
-        self.cma_lb.setToolTip(_translate("MainDialog", "<html><head/><body><p><span style=\" font-weight:600;\">CMA</span></p><p>You can set the amount of memory to allocate to the graphics driver here. CMA is a dynamic, contiguous allocator provided by the kernel. For most users, it is recommended to set this to 256 MiB (ensuring optimal display performance), unless you will be very short of RAM for your running applications.</p></body></html>"))
+        self.cma_lb.setToolTip(_translate("MainDialog", "<html><head/><body><p><span style=\" font-weight:600;\">CMA</span></p><p>You can set the amount of memory to allocate to the graphics driver here. CMA is a dynamic, contiguous allocator provided by the kernel.</p><p>For most users, it is recommended to set this to <span style=\" font-weight:600;\">256 MiB</span> (ensuring optimal display performance), unless you will be very short of RAM for your running applications.</p></body></html>"))
         self.cma_lb.setText(_translate("MainDialog", "CMA:"))
         self.cma_cb.setItemText(0, _translate("MainDialog", "256 MiB"))
         self.cma_cb.setItemText(1, _translate("MainDialog", "192 MiB"))
@@ -311,6 +331,16 @@ class Ui_MainDialog(object):
         self.cma_cb.setItemText(3, _translate("MainDialog", "96 MiB"))
         self.cma_cb.setItemText(4, _translate("MainDialog", "64 MiB"))
         self.cma_cb.setItemText(5, _translate("MainDialog", "Unspecified"))
+        self.gpu_lb.setToolTip(_translate("MainDialog", "<html><head/><body><p><span style=\" font-weight:600;\">GPU</span></p><p>You can set the amount of memory to allocate to the GPU here.</p><p>If you plan to use the RPi3\'s hardware video codecs (requires kernel &gt;= 4.19), then at least <span style=\" font-weight:600;\">96 MiB</span> is required.</p><p>If you plan to use the camera (requires kernel &gt;= 4.19), then at least <span style=\" font-weight:600;\">128 MiB</span> is required.</p><p>Otherwise, <span style=\" font-weight:600;\">16 MiB</span> will suffice (note that setting this low a GPU value will force /boot/start_cd.dat to load).</p></body></html>"))
+        self.gpu_lb.setText(_translate("MainDialog", "GPU:"))
+        self.gpu_cb.setItemText(0, _translate("MainDialog", "256 MiB"))
+        self.gpu_cb.setItemText(1, _translate("MainDialog", "192 MiB"))
+        self.gpu_cb.setItemText(2, _translate("MainDialog", "128 MiB"))
+        self.gpu_cb.setItemText(3, _translate("MainDialog", "96 MiB"))
+        self.gpu_cb.setItemText(4, _translate("MainDialog", "64 MiB"))
+        self.gpu_cb.setItemText(5, _translate("MainDialog", "32 MiB"))
+        self.gpu_cb.setItemText(6, _translate("MainDialog", "16 MiB"))
+        self.gpu_cb.setItemText(7, _translate("MainDialog", "Unspecified"))
         self.normal_mode_rb.setToolTip(_translate("MainDialog", "<html><head/><body><p><span style=\" font-weight:600;\">Normal mode</span></p><p>Select this for more control over HDMI display output (recommended).</p><p>It is then also recommended to choose &quot;Auto-detect from EDID&quot; for both HDMI group and HDMI mode below, unless your monitor displays in a lower resolution than that you know it is capable of (in which case, choose an appropriate <span style=\" background-color:transparent;\">explicit</span> HDMI group, and if required, an appropriate explicit HDMI mode, from the dropdowns below).</p></body></html>"))
         self.normal_mode_rb.setText(_translate("MainDialog", "Normal mode"))
         self.normal_mode_rb.setShortcut(_translate("MainDialog", "Ctrl+R"))
@@ -359,6 +389,8 @@ class Ui_MainDialog(object):
         self.bluetooth_cb.setText(_translate("MainDialog", "Enable Bluetooth (disables serial port)"))
         self.audio_cb.setToolTip(_translate("MainDialog", "<html><head/><body><p><span style=\" font-weight:600;\">Enable audio</span></p><p>When checked, the RPi3\'s onboard ALSA interface will be enabled.</p></body></html>"))
         self.audio_cb.setText(_translate("MainDialog", "Enable audio"))
+        self.camera_cb.setToolTip(_translate("MainDialog", "<html><head/><body><p><span style=\" font-weight:600;\">Enable camera</span></p><p>When checked, the RPi3\'s onboard camera interface will be enabled. Requires kernel &gt;=4.19 to operate.</p><p>You must allocate at least 128 MiB of GPU memory when using the camera.</p></body></html>"))
+        self.camera_cb.setText(_translate("MainDialog", "Enable camera"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.wifi_tab), _translate("MainDialog", "Interfaces"))
 
 from pyconfig_gen import pyconfig_gen_rc

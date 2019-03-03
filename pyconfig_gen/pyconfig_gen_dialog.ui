@@ -82,7 +82,7 @@
          <item>
           <widget class="QLabel" name="graphics_driver_lb">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Graphics driver&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Choose which display driver you'd like from this dropdown. The three options are:&lt;/p&gt;&lt;ol style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;fkms-v3d&lt;/span&gt;: an accelerated, GL-based graphics driver, using DispmanX for composition ('fake' KMS); recommended for most users, and the shipped default on the image;&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;kms-v3d&lt;/span&gt;: as above, but using the kernel KMS driver for composition ('full' KMS); and&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;framebuffer&lt;/span&gt;: fallback, unaccelerated graphics driver.&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;Please note that currently, MMAL and OpenMAX IL access to the GPU is &lt;span style=&quot; font-style:italic;&quot;&gt;unavailable&lt;/span&gt; when booted in 64-bit mode (this issue is common to all 64-bit distros for the RPi3, not just Gentoo).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Graphics driver&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Choose which display driver you'd like from this dropdown. The three options are:&lt;/p&gt;&lt;ol style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;fkms-v3d&lt;/span&gt;: an accelerated, GL-based graphics driver, using DispmanX for composition ('fake' KMS); recommended for most users (required for audio out on the Pi-Top), and the shipped default on the image;&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;kms-v3d&lt;/span&gt;: as above, but using the kernel KMS driver for composition ('full' KMS); may be used by non-Pi-Top users (if display manager compositing is turned off); and&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;framebuffer&lt;/span&gt;: fallback, unaccelerated graphics driver.&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;Please note that currently, MMAL and OpenMAX IL access to the GPU is &lt;span style=&quot; font-style:italic;&quot;&gt;unavailable&lt;/span&gt; when booted into a 64-bit userspace (this issue is common to all 64-bit distros for the RPi3, not just Gentoo). &lt;/p&gt;&lt;p&gt;However, as of kernels &amp;gt;= 4.19, camera and video codec access &lt;span style=&quot; font-style:italic;&quot;&gt;are&lt;/span&gt; available in 64-bit mode, via v4l2.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string>Graphics driver:</string>
@@ -120,7 +120,7 @@
          <item>
           <widget class="QLabel" name="cma_lb">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;CMA&lt;/span&gt;&lt;/p&gt;&lt;p&gt;You can set the amount of memory to allocate to the graphics driver here. CMA is a dynamic, contiguous allocator provided by the kernel. For most users, it is recommended to set this to 256 MiB (ensuring optimal display performance), unless you will be very short of RAM for your running applications.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;CMA&lt;/span&gt;&lt;/p&gt;&lt;p&gt;You can set the amount of memory to allocate to the graphics driver here. CMA is a dynamic, contiguous allocator provided by the kernel.&lt;/p&gt;&lt;p&gt;For most users, it is recommended to set this to &lt;span style=&quot; font-weight:600;&quot;&gt;256 MiB&lt;/span&gt; (ensuring optimal display performance), unless you will be very short of RAM for your running applications.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string>CMA:</string>
@@ -155,6 +155,63 @@
            <item>
             <property name="text">
              <string>64 MiB</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Unspecified</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="gpu_lb">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;GPU&lt;/span&gt;&lt;/p&gt;&lt;p&gt;You can set the amount of memory to allocate to the GPU here.&lt;/p&gt;&lt;p&gt;If you plan to use the RPi3's hardware video codecs (requires kernel &amp;gt;= 4.19), then at least &lt;span style=&quot; font-weight:600;&quot;&gt;96 MiB&lt;/span&gt; is required.&lt;/p&gt;&lt;p&gt;If you plan to use the camera (requires kernel &amp;gt;= 4.19), then at least &lt;span style=&quot; font-weight:600;&quot;&gt;128 MiB&lt;/span&gt; is required.&lt;/p&gt;&lt;p&gt;Otherwise, &lt;span style=&quot; font-weight:600;&quot;&gt;16 MiB&lt;/span&gt; will suffice (note that setting this low a GPU value will force /boot/start_cd.dat to load).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>GPU:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="gpu_cb">
+           <item>
+            <property name="text">
+             <string>256 MiB</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>192 MiB</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>128 MiB</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>96 MiB</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>64 MiB</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>32 MiB</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>16 MiB</string>
             </property>
            </item>
            <item>
@@ -618,6 +675,16 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QCheckBox" name="camera_cb">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Enable camera&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When checked, the RPi3's onboard camera interface will be enabled. Requires kernel &amp;gt;=4.19 to operate.&lt;/p&gt;&lt;p&gt;You must allocate at least 128 MiB of GPU memory when using the camera.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>Enable camera</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
@@ -682,8 +749,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>262</x>
-     <y>651</y>
+     <x>271</x>
+     <y>32</y>
     </hint>
     <hint type="destinationlabel">
      <x>262</x>
@@ -698,8 +765,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>207</x>
-     <y>652</y>
+     <x>216</x>
+     <y>32</y>
     </hint>
     <hint type="destinationlabel">
      <x>198</x>
@@ -714,8 +781,8 @@
    <slot>button_bar_button_clicked(QAbstractButton*)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>130</x>
-     <y>645</y>
+     <x>139</x>
+     <y>32</y>
     </hint>
     <hint type="destinationlabel">
      <x>149</x>
@@ -730,8 +797,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>338</x>
-     <y>538</y>
+     <x>361</x>
+     <y>497</y>
     </hint>
     <hint type="destinationlabel">
      <x>552</x>
@@ -746,8 +813,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>289</x>
-     <y>385</y>
+     <x>299</x>
+     <y>380</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -762,8 +829,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>245</x>
-     <y>76</y>
+     <x>203</x>
+     <y>96</y>
     </hint>
     <hint type="destinationlabel">
      <x>400</x>
@@ -794,8 +861,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>404</x>
-     <y>76</y>
+     <x>339</x>
+     <y>96</y>
     </hint>
     <hint type="destinationlabel">
      <x>396</x>
@@ -810,8 +877,8 @@
    <slot>gui_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>249</x>
-     <y>109</y>
+     <x>211</x>
+     <y>124</y>
     </hint>
     <hint type="destinationlabel">
      <x>301</x>
@@ -874,8 +941,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>198</x>
-     <y>398</y>
+     <x>219</x>
+     <y>380</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -890,8 +957,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>112</x>
-     <y>398</y>
+     <x>130</x>
+     <y>380</y>
     </hint>
     <hint type="destinationlabel">
      <x>476</x>
@@ -906,8 +973,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>238</x>
-     <y>333</y>
+     <x>228</x>
+     <y>321</y>
     </hint>
     <hint type="destinationlabel">
      <x>472</x>
@@ -922,8 +989,8 @@
    <slot>hdmi_ignore_edid_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>368</x>
-     <y>296</y>
+     <x>403</x>
+     <y>291</y>
     </hint>
     <hint type="destinationlabel">
      <x>476</x>
@@ -938,8 +1005,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>339</x>
-     <y>269</y>
+     <x>374</x>
+     <y>265</y>
     </hint>
     <hint type="destinationlabel">
      <x>470</x>
@@ -954,8 +1021,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>418</x>
-     <y>388</y>
+     <x>398</x>
+     <y>380</y>
     </hint>
     <hint type="destinationlabel">
      <x>473</x>
@@ -970,8 +1037,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>243</x>
-     <y>510</y>
+     <x>266</x>
+     <y>471</y>
     </hint>
     <hint type="destinationlabel">
      <x>546</x>
@@ -986,8 +1053,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>115</x>
-     <y>97</y>
+     <x>138</x>
+     <y>122</y>
     </hint>
     <hint type="destinationlabel">
      <x>558</x>
@@ -1002,8 +1069,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>314</x>
-     <y>127</y>
+     <x>337</x>
+     <y>148</y>
     </hint>
     <hint type="destinationlabel">
      <x>525</x>
@@ -1059,6 +1126,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>gpu_cb</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>MainDialog</receiver>
+   <slot>gui_value_changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>458</x>
+     <y>89</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>549</x>
+     <y>124</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>camera_cb</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>MainDialog</receiver>
+   <slot>camera_cb_value_changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>129</x>
+     <y>244</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>130</x>
+     <y>608</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>hdmi_group_changed(int)</slot>
@@ -1067,5 +1166,6 @@
   <slot>gui_changed()</slot>
   <slot>gui_value_changed(int)</slot>
   <slot>gui_bool_changed(bool)</slot>
+  <slot>camera_cb_value_changed(int)</slot>
  </slots>
 </ui>
