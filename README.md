@@ -5,4 +5,4 @@ for RPi3 and RPi4 SBCs, targeting Gentoo Linux.
 
 Screenshot:
 
-<img src="https://raw.githubusercontent.com/sakaki-/resources/master/raspberrypi/pi3/pyconfig_gen-screenshot.png" alt="pyconfig_gen application in use (screenshot)"/>
+<img src="https://raw.githubusercontent.com/sakaki-/resources/master/raspberrypi/pi4/pyconfig_gen-screenshot2.png" alt="pyconfig_gen application in use (screenshot)"/>
