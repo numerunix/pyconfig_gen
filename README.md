@@ -1,7 +1,7 @@
 # pyconfig_gen
 
 **pyconfig_gen** is a simple GUI utility to edit the /boot/config.txt file
-for RPi3 computers, targeting Gentoo Linux.
+for RPi3 and RPi4 SBCs, targeting Gentoo Linux.
 
 Screenshot:
 
