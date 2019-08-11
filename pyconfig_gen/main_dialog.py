@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 #
-# Simple configuration settings app for the RPi3
+# Simple configuration settings app for the RPi
 #
-# Copyright (c) 2018 sakaki <sakaki@deciban.com>
+# Copyright (c) 2018-19 sakaki <sakaki@deciban.com>
 # License: GPL v3+
 # NO WARRANTY
 
-import sys, os, re, shutil, time
+import sys, os, re, shutil, time, subprocess, pwd
 from PyQt5 import QtCore
 from pathlib import Path
 from PyQt5.QtWidgets import QApplication, QDialog, QWidget, QPushButton
-from PyQt5.QtWidgets import QMessageBox, QDialogButtonBox
+from PyQt5.QtWidgets import QMessageBox, QDialogButtonBox, QButtonGroup
 from PyQt5.QtGui import QIcon
 from pyconfig_gen.pyconfig_gen_dialog import Ui_MainDialog
 from pyconfig_gen.config_utils import *
@@ -19,11 +19,12 @@ CONFIG_PATHNAME = "/boot/config.txt"
 CONFIG_LNG_PATHNAME = "/boot/config.txt.lng"
 CONFIG_TBC_PATHNAME = "/boot/config.txt.tbc"
 CONFIG_REJ_PATHNAME = "/boot/config.txt.rej"
-CONFIG_OLD_PATHNAME = "/boot/config.txt.old"    
+CONFIG_OLD_PATHNAME = "/boot/config.txt.old"
+WIFI_REGDOM_PATHNAME = "/etc/conf.d/rpi3-wifi-regdom"
 
 HDMI_BASE_MODE_TXT = "Auto-detect from EDID"
 BREAK_REBOOT_NOTIFIED = "break_reboot_notified"
-BASE_TITLE = "RPi3 Configuration"
+BASE_TITLE = "RPi Configuration"
 SAVE_NEEDED = " (Unsaved Changes)"
 CMAS = [256, 192, 128, 96, 64, 0]
 GPUS = [256, 192, 128, 96, 64, 32, 16, 0]
@@ -105,10 +106,45 @@ class MainDialog(QDialog):
     save_lng = True
     first_run = False
 
+    hdmi_safe1 = None
+    hdmi_group1 = None
+    hdmi_force_hotplug1 = None
+    hdmi_ignore_edid1 = None
+    config_hdmi_boost1 = None
+    disable_overscan1 = None
+    overscan_left1 = None
+    overscan_right1 = None
+    overscan_top1 = None
+    overscan_bottom1 = None
+    hdmi_force_edid_audio1 = None
+    hdmi_drive1 = None
+
+    valid_cea_modes1 = []
+    valid_cea_modes_txt1 = []
+    valid_dmt_modes1 = []
+    valid_dmt_modes_txt1 = []
+    valid_modes1 = None
+    valid_modes_txt1 = None
+    using_fallback_hdmi_data1 = None
+    original_uid = None
+    original_gid = None
+    original_home = None
+    original_path = None
+    original_display = None
+
+    country_list = None
+    tmp_regdom_pathname = None
+    wifi_regdom = None
+
+    overclock_bg = None
+    overclock_level = None
+
+
     # utilities -----------------------------------------------------
 
     def make_tmp_copy_of_config(self):
         self.tmp_pathname=setup_tmpfile_copy(CONFIG_PATHNAME)
+        self.tmp_regdom_pathname=setup_tmpfile_copy(WIFI_REGDOM_PATHNAME)
 
     def cleanup_tmp_copy_of_config(self):
         if self.tmp_pathname:
@@ -117,6 +153,9 @@ class MainDialog(QDialog):
             bak_pathname = f"{self.tmp_pathname}.bak"
             if os.path.exists(bak_pathname):
                 os.remove(bak_pathname)
+        if self.tmp_regdom_pathname:
+            if os.path.exists(self.tmp_regdom_pathname):
+                os.remove(self.tmp_regdom_pathname)
 
     def sys_exit(self, retval = 0):
         self.cleanup_tmp_copy_of_config()
@@ -128,13 +167,22 @@ class MainDialog(QDialog):
         find_vc4_and_cma=re.compile("([^,\s]+)\s*,?\s*(cma-(\d+))?")
         v = get_config_var("hdmi_safe", self.tmp_pathname, 0)
         self.hdmi_safe = (v == 1)
+        v = get_config_var("hdmi_safe:1@pi4", self.tmp_pathname, 0)
+        self.hdmi_safe1 = (v == 1)
         v = get_config_var("hdmi_group", self.tmp_pathname, 0)
         # assume default if undefined
         self.hdmi_group = v if 0 <= v <= 2 else 0
+        v = get_config_var("hdmi_group:1@pi4", self.tmp_pathname, 0)
+        # assume default if undefined
+        self.hdmi_group1 = v if 0 <= v <= 2 else 0
         v = get_config_var("hdmi_mode", self.tmp_pathname, 0)
         # assume default if undefined
         self.hdmi_mode = v if (self.hdmi_group == 1 and 0 <= v <= 59) or \
             (self.hdmi_group == 2 and 0 <= v <= 86) else 0
+        v = get_config_var("hdmi_mode:1@pi4", self.tmp_pathname, 0)
+        # assume default if undefined
+        self.hdmi_mode1 = v if (self.hdmi_group1 == 1 and 0 <= v <= 59) or \
+            (self.hdmi_group1 == 2 and 0 <= v <= 86) else 0
         v = get_config_var("dtoverlay=vc4-", self.tmp_pathname,
                            None, False)
         m = find_vc4_and_cma.match(v)
@@ -159,13 +207,22 @@ class MainDialog(QDialog):
             self.gpu_vc4 = GPUS.index(0)
         v = get_config_var("hdmi_force_hotplug", self.tmp_pathname, 0)
         self.hdmi_force_hotplug = v == 1
+        v = get_config_var("hdmi_force_hotplug:1@pi4", self.tmp_pathname, 0)
+        self.hdmi_force_hotplug1 = v == 1
         v = get_config_var("hdmi_ignore_edid", self.tmp_pathname,
                            None, False)
         self.hdmi_ignore_edid = v is not None and v.lower() == "0xa5000080"
+        v = get_config_var("hdmi_ignore_edid:1@pi4", self.tmp_pathname,
+                           None, False)
+        self.hdmi_ignore_edid1 = v is not None and v.lower() == "0xa5000080"
         v = get_config_var("config_hdmi_boost", self.tmp_pathname, 5)
         self.config_hdmi_boost = v
+        v = get_config_var("config_hdmi_boost:1@pi4", self.tmp_pathname, 5)
+        self.config_hdmi_boost1 = v
         v = get_config_var("disable_overscan", self.tmp_pathname, 0)
         self.disable_overscan = v == 1
+        v = get_config_var("disable_overscan:1@pi4", self.tmp_pathname, 0)
+        self.disable_overscan1 = v == 1
         v = get_config_var("overscan_left", self.tmp_pathname, 0)
         self.overscan_left = v
         v = get_config_var("overscan_right", self.tmp_pathname, 0)
@@ -174,10 +231,22 @@ class MainDialog(QDialog):
         self.overscan_top = v
         v = get_config_var("overscan_bottom", self.tmp_pathname, 0)
         self.overscan_bottom = v
+        v = get_config_var("overscan_left:1@pi4", self.tmp_pathname, 0)
+        self.overscan_left1 = v
+        v = get_config_var("overscan_right:1@pi4", self.tmp_pathname, 0)
+        self.overscan_right1 = v
+        v = get_config_var("overscan_top:1@pi4", self.tmp_pathname, 0)
+        self.overscan_top1 = v
+        v = get_config_var("overscan_bottom:1@pi4", self.tmp_pathname, 0)
+        self.overscan_bottom1 = v
         v = get_config_var("hdmi_force_edid_audio", self.tmp_pathname, 0)
         self.hdmi_force_edid_audio = v == 1
+        v = get_config_var("hdmi_force_edid_audio:1@pi4", self.tmp_pathname, 0)
+        self.hdmi_force_edid_audio1 = v == 1
         v = get_config_var("hdmi_drive", self.tmp_pathname, 1)
         self.hdmi_drive = v
+        v = get_config_var("hdmi_drive:1@pi4", self.tmp_pathname, 1)
+        self.hdmi_drive1 = v
         v = get_config_var("dtparam=spi=", self.tmp_pathname,
                            None, False)
         self.dtparam_spi = True if v and "on" in v else False
@@ -196,9 +265,35 @@ class MainDialog(QDialog):
         v = get_config_var("start_x", self.tmp_pathname, 0)
         self.dtparam_camera = v == 1
 
+        force_turbo = max(get_config_var("force_turbo", self.tmp_pathname, 0),
+                          get_config_var("force_turbo@pi4", self.tmp_pathname, 0))
+        arm_freq = get_config_var("arm_freq@pi4", self.tmp_pathname, 1500)
+        gpu_freq = get_config_var("gpu_freq@pi4", self.tmp_pathname, 500)
+        over_voltage = get_config_var("over_voltage@pi4", self.tmp_pathname, 0)
+        # infer the overclock level
+        self.overclock_level = 4
+        if force_turbo == 0:
+            if arm_freq == 1500 and gpu_freq == 500 and over_voltage == 0:
+                self.overclock_level = 0
+            elif arm_freq == 1750 and gpu_freq == 500 and over_voltage == 2:
+                self.overclock_level = 1
+            elif arm_freq == 1750 and gpu_freq == 600 and over_voltage == 4:
+                self.overclock_level = 2
+            elif arm_freq == 2000 and gpu_freq == 600 and over_voltage == 6:
+                self.overclock_level = 3
+        
+        # WiFi status
+        v = get_config_var("WIFI_REGDOM", self.tmp_regdom_pathname,
+                           None, False)
+        v = v.replace('"', '')
+        v = v.replace("'", "")
+        self.wifi_regdom = v
+        
     def dirty_check(self):
         if config_files_differ_materially(self.tmp_pathname, CONFIG_PATHNAME,
-                                          print_debug = self.use_fake_data):
+                                          print_debug = self.use_fake_data) or \
+           config_files_differ_materially(self.tmp_regdom_pathname, WIFI_REGDOM_PATHNAME,
+                                       print_debug = self.use_fake_data):
             self.setWindowTitle(BASE_TITLE + SAVE_NEEDED)
             self.dirty = True
         else:
@@ -217,22 +312,37 @@ class MainDialog(QDialog):
         self.ui.gpu_cb.setCurrentIndex(self.gpu_vc4)
         self.ui.cma_cb.setEnabled(0 <= self.dtoverlay_vc4 <= 1)
         self.ui.safe_mode_rb.setChecked(self.hdmi_safe)
+        self.ui.safe_mode1_rb.setChecked(self.hdmi_safe1)
         self.ui.normal_mode_rb.setChecked(not self.hdmi_safe)
         self.ui.normal_mode_gb.setEnabled(not self.hdmi_safe)
+        self.ui.normal_mode1_rb.setChecked(not self.hdmi_safe1)
+        self.ui.normal_mode1_gb.setEnabled(not self.hdmi_safe1)
         self.ui.hdmi_group_cb.setCurrentIndex(self.hdmi_group)
+        self.ui.hdmi_group1_cb.setCurrentIndex(self.hdmi_group1)
         self.ui.hdmi_mode_cb.setEnabled(self.hdmi_group > 0)
+        self.ui.hdmi_mode1_cb.setEnabled(self.hdmi_group1 > 0)
         self.ui.hdmi_group_cb.setCurrentIndex(self.hdmi_group)
+        self.ui.hdmi_group1_cb.setCurrentIndex(self.hdmi_group1)
         self.ui.overscan_gb.setChecked(not self.disable_overscan)
+        self.ui.overscan1_gb.setChecked(not self.disable_overscan1)
         # ensure dialog populated
         if is_initial:
             self.hdmi_group_changed(self.hdmi_group)
+            self.hdmi_group1_changed(self.hdmi_group1)
         ix = [i for i, j in enumerate(self.valid_modes) if j[0] == self.hdmi_mode]
         if ix:
             self.ui.hdmi_mode_cb.setCurrentIndex(ix[0])
         else:
             self.ui.hdmi_mode_cb.setCurrentIndex(0)
+        ix1 = [i for i, j in enumerate(self.valid_modes1) if j[0] == self.hdmi_mode1]
+        if ix1:
+            self.ui.hdmi_mode1_cb.setCurrentIndex(ix1[0])
+        else:
+            self.ui.hdmi_mode1_cb.setCurrentIndex(0)
         self.ui.hdmi_force_hotplug_cb.setChecked(self.hdmi_force_hotplug)
+        self.ui.hdmi_force_hotplug1_cb.setChecked(self.hdmi_force_hotplug1)
         self.ui.hdmi_ignore_edid_cb.setChecked(self.hdmi_ignore_edid)
+        self.ui.hdmi_ignore_edid1_cb.setChecked(self.hdmi_ignore_edid1)
         self.ui.config_hdmi_boost_sb.setValue(self.config_hdmi_boost)
         if self.config_hdmi_boost == 5:
             self.ui.config_hdmi_boost_status_lb.setText("(default)")
@@ -242,20 +352,41 @@ class MainDialog(QDialog):
             self.ui.config_hdmi_boost_status_lb.setText("(min)")
         else:
             self.ui.config_hdmi_boost_status_lb.clear()
+        self.ui.config_hdmi_boost1_sb.setValue(self.config_hdmi_boost1)
+        if self.config_hdmi_boost1 == 5:
+            self.ui.config_hdmi_boost_status1_lb.setText("(default)")
+        elif self.config_hdmi_boost1==11:
+            self.ui.config_hdmi_boost_status1_lb.setText("(max)")
+        elif self.config_hdmi_boost1==0:
+            self.ui.config_hdmi_boost_status1_lb.setText("(min)")
+        else:
+            self.ui.config_hdmi_boost_status1_lb.clear()
         self.ui.overscan_gb.setChecked(not self.disable_overscan)
         self.ui.overscan_left_sb.setValue(self.overscan_left)
         self.ui.overscan_right_sb.setValue(self.overscan_right)
         self.ui.overscan_top_sb.setValue(self.overscan_top)
         self.ui.overscan_bottom_sb.setValue(self.overscan_bottom)
+        self.ui.overscan_left1_sb.setValue(self.overscan_left1)
+        self.ui.overscan_right1_sb.setValue(self.overscan_right1)
+        self.ui.overscan_top1_sb.setValue(self.overscan_top1)
+        self.ui.overscan_bottom1_sb.setValue(self.overscan_bottom1)
         self.ui.hdmi_force_edid_audio_cb.setChecked(self.hdmi_force_edid_audio)
+        self.ui.hdmi_force_edid_audio1_cb.setChecked(self.hdmi_force_edid_audio1)
         self.ui.hdmi_drive_cb.setChecked(self.hdmi_drive == 2)
+        self.ui.hdmi_drive1_cb.setChecked(self.hdmi_drive1 == 2)
         self.ui.spi_cb.setChecked(self.dtparam_spi)
         self.ui.i2c_cb.setChecked(self.dtparam_i2c)
         self.ui.i2s_cb.setChecked(self.dtparam_i2s)
         self.ui.audio_cb.setChecked(self.dtparam_audio)
         self.ui.camera_cb.setChecked(self.dtparam_camera)
         self.ui.bluetooth_cb.setChecked(not self.dtoverlay_disable_bt)
-
+        ix = [i for i, j in enumerate(self.country_list) if j[0:2] == self.wifi_regdom]
+        if ix:
+            self.ui.wifi_country_code_cb.setCurrentIndex(ix[0])
+        else:
+            self.ui.wifi_country_code_cb.setCurrentIndex(0)
+        self.overclock_bg.button(self.overclock_level).setChecked(True)
+        
         self.dirty_check()
 
     def populate_state_from_gui(self, is_initial = False):
@@ -263,27 +394,41 @@ class MainDialog(QDialog):
         self.cma_vc4 = self.ui.cma_cb.currentIndex()
         self.gpu_vc4 = self.ui.gpu_cb.currentIndex()
         self.hdmi_safe = self.ui.safe_mode_rb.isChecked()
+        self.hdmi_safe1 = self.ui.safe_mode1_rb.isChecked()
         self.hdmi_group = self.ui.hdmi_group_cb.currentIndex()
+        self.hdmi_group1 = self.ui.hdmi_group1_cb.currentIndex()
         try:
             self.hdmi_mode = self.valid_modes[self.ui.hdmi_mode_cb.currentIndex()][0]
         except IndexError:
             self.hdmi_mode = 0
+        try:
+            self.hdmi_mode1 = self.valid_modes1[self.ui.hdmi_mode1_cb.currentIndex()][0]
+        except IndexError:
+            self.hdmi_mode1 = 0
         self.hdmi_force_hotplug = self.ui.hdmi_force_hotplug_cb.isChecked()
+        self.hdmi_force_hotplug1 = self.ui.hdmi_force_hotplug1_cb.isChecked()
         self.hdmi_ignore_edid = self.ui.hdmi_ignore_edid_cb.isChecked()
+        self.hdmi_ignore_edid1 = self.ui.hdmi_ignore_edid1_cb.isChecked()
         self.config_hdmi_boost = self.ui.config_hdmi_boost_sb.value()
+        self.config_hdmi_boost1 = self.ui.config_hdmi_boost1_sb.value()
         self.disable_overscan = not self.ui.overscan_gb.isChecked()
+        self.disable_overscan1 = not self.ui.overscan1_gb.isChecked()
         self.overscan_left = self.ui.overscan_left_sb.value()
         self.overscan_right = self.ui.overscan_right_sb.value()
         self.overscan_top = self.ui.overscan_top_sb.value()
         self.overscan_bottom = self.ui.overscan_bottom_sb.value()
         self.hdmi_force_edid_audio = self.ui.hdmi_force_edid_audio_cb.isChecked()
+        self.hdmi_force_edid_audio1 = self.ui.hdmi_force_edid_audio1_cb.isChecked()
         self.hdmi_drive = 2 if self.ui.hdmi_drive_cb.isChecked() else 0
+        self.hdmi_drive1 = 2 if self.ui.hdmi_drive1_cb.isChecked() else 0
         self.dtparam_spi = self.ui.spi_cb.isChecked()
         self.dtparam_i2c = self.ui.i2c_cb.isChecked()
         self.dtparam_i2s = self.ui.i2s_cb.isChecked()
         self.dtparam_audio = self.ui.audio_cb.isChecked()
         self.dtparam_camera = self.ui.camera_cb.isChecked()
         self.dtoverlay_disable_bt = not self.ui.bluetooth_cb.isChecked()
+        self.wifi_regdom = self.country_list[self.ui.wifi_country_code_cb.currentIndex()][0:2]
+        self.overclock_level = self.overclock_bg.checkedId()
 
     def populate_config_from_state(self, is_initial = False):
         if self.dtoverlay_vc4 == 2:
@@ -344,29 +489,95 @@ class MainDialog(QDialog):
                                       0, self.tmp_pathname)
             set_or_comment_config_var("hdmi_drive", self.hdmi_drive,
                                       0, self.tmp_pathname)
-            if self.dtparam_spi:
-                set_config_var("dtparam=spi=", "on", self.tmp_pathname, "off", False)
-            else:
-                comment_config_var("dtparam=spi=", self.tmp_pathname)
-            if self.dtparam_i2c:
-                set_config_var("dtparam=i2c_arm=", "on", self.tmp_pathname, "off", False)
-            else:
-                comment_config_var("dtparam=i2c_arm=", self.tmp_pathname)
-            if self.dtparam_i2s:
-                set_config_var("dtparam=i2s=", "on", self.tmp_pathname, "off", False)
-            else:
-                comment_config_var("dtparam=i2s=", self.tmp_pathname)
-            if self.dtparam_audio:
-                set_config_var("dtparam=audio=", "on", self.tmp_pathname, "off", False)
-            else:
-                comment_config_var("dtparam=audio=", self.tmp_pathname)
-            if self.dtoverlay_disable_bt:
-                set_config_var("dtoverlay=pi3-disable-bt", "", self.tmp_pathname, "off", False)
-            else:
-                comment_config_var("dtoverlay=pi3-disable-bt", self.tmp_pathname)
-            set_or_comment_config_var("start_x",
-                                      1 if self.dtparam_camera else 0,
+        if self.hdmi_safe1:
+            set_config_var("hdmi_safe:1@pi4", "1", self.tmp_pathname)
+            # comment out anything else related
+            comment_config_var("hdmi_force_hotplug:1@pi4", self.tmp_pathname)
+            comment_config_var("hdmi_ignore_edid:1@pi4", self.tmp_pathname)
+
+            comment_config_var("config_hdmi_boost:1@pi4", self.tmp_pathname)
+            comment_config_var("hdmi_group:1@pi4", self.tmp_pathname)
+            comment_config_var("hdmi_mode:1@pi4", self.tmp_pathname)
+            comment_config_var("disable_overscan:1@pi4", self.tmp_pathname)
+            for d in ["left", "right", "top", "bottom"]:
+                comment_config_var(f"overscan_{d}:1@pi4", self.tmp_pathname)
+        else:
+            comment_config_var("hdmi_safe:1@pi4", self.tmp_pathname)
+            # set other hdmi-related vars, respecting defaults
+            set_or_comment_config_var("hdmi_group:1@pi4", self.hdmi_group1,
                                       0, self.tmp_pathname)
+            set_or_comment_config_var("hdmi_mode:1@pi4", self.hdmi_mode1,
+                                      0, self.tmp_pathname)
+            set_or_comment_config_var("hdmi_force_hotplug:1@pi4",
+                                      1 if self.hdmi_force_hotplug1 else 0,
+                                      0, self.tmp_pathname)
+            set_or_comment_config_var("hdmi_ignore_edid:1@pi4",
+                                      "0xa5000080" if self.hdmi_ignore_edid1 else None,
+                                      None, self.tmp_pathname)
+            set_or_comment_config_var("config_hdmi_boost:1@pi4", self.config_hdmi_boost1,
+                                      5, self.tmp_pathname)
+            set_or_comment_config_var("disable_overscan:1@pi4",
+                                      1 if self.disable_overscan1 else 0,
+                                      0, self.tmp_pathname)
+            if self.disable_overscan1:
+                for d in ["left", "right", "top", "bottom"]:
+                    comment_config_var(f"overscan_{d}:1@pi4", self.tmp_pathname)
+            else:
+                set_or_comment_config_var("overscan_left:1@pi4", self.overscan_left1,
+                                          0, self.tmp_pathname)
+                set_or_comment_config_var("overscan_right:1@pi4", self.overscan_right1,
+                                          0, self.tmp_pathname)
+                set_or_comment_config_var("overscan_top:1@pi4", self.overscan_top1,
+                                          0, self.tmp_pathname)
+                set_or_comment_config_var("overscan_bottom:1@pi4", self.overscan_bottom1,
+                                          0, self.tmp_pathname)
+            set_or_comment_config_var("hdmi_force_edid_audio:1@pi4",
+                                      1 if self.hdmi_force_edid_audio1 else 0,
+                                      0, self.tmp_pathname)
+            set_or_comment_config_var("hdmi_drive:1@pi4", self.hdmi_drive1,
+                                      0, self.tmp_pathname)
+
+        if self.dtparam_spi:
+            set_config_var("dtparam=spi=", "on", self.tmp_pathname, "off", False)
+        else:
+            comment_config_var("dtparam=spi=", self.tmp_pathname)
+        if self.dtparam_i2c:
+            set_config_var("dtparam=i2c_arm=", "on", self.tmp_pathname, "off", False)
+        else:
+            comment_config_var("dtparam=i2c_arm=", self.tmp_pathname)
+        if self.dtparam_i2s:
+            set_config_var("dtparam=i2s=", "on", self.tmp_pathname, "off", False)
+        else:
+            comment_config_var("dtparam=i2s=", self.tmp_pathname)
+        if self.dtparam_audio:
+            set_config_var("dtparam=audio=", "on", self.tmp_pathname, "off", False)
+        else:
+            comment_config_var("dtparam=audio=", self.tmp_pathname)
+        if self.dtoverlay_disable_bt:
+            set_config_var("dtoverlay=pi3-disable-bt", "", self.tmp_pathname, "off", False)
+        else:
+            comment_config_var("dtoverlay=pi3-disable-bt", self.tmp_pathname)
+        set_or_comment_config_var("start_x",
+                                  1 if self.dtparam_camera else 0,
+                                  0, self.tmp_pathname)
+        if self.overclock_level < 4:
+            if self.overclock_level == 0:
+                (arm_freq, gpu_freq, over_voltage) = (1500, 500, 0)
+            elif self.overclock_level == 1:
+                (arm_freq, gpu_freq, over_voltage) = (1750, 500, 2)
+            elif self.overclock_level == 2:
+                (arm_freq, gpu_freq, over_voltage) = (1750, 600, 4)
+            elif self.overclock_level == 3:
+                (arm_freq, gpu_freq, over_voltage) = (2000, 600, 6)
+            set_or_comment_config_var("force_turbo", 0, 0, self.tmp_pathname)
+            set_or_comment_config_var("force_turbo@pi4", 0, 0, self.tmp_pathname)
+            set_or_comment_config_var("arm_freq@pi4", arm_freq, 1500, self.tmp_pathname)
+            set_or_comment_config_var("gpu_freq@pi4", gpu_freq, 500, self.tmp_pathname)
+            set_or_comment_config_var("over_voltage@pi4", over_voltage, 0, self.tmp_pathname)
+        
+        set_config_var("WIFI_REGDOM", '"' + self.wifi_regdom + '"',
+                       self.tmp_regdom_pathname, True, False)
+
 
     def update_everything(self):
         if not self.in_update:
@@ -386,15 +597,24 @@ class MainDialog(QDialog):
                 # set sensible defaults for overscan
                 if self.hdmi_safe:
                     self.disable_overscan = False
-                if self.hdmi_safe or self.disable_overscan:
-                    if not config_var_defined("overscan_left", self.tmp_pathname):
-                        self.overscan_left = 24
-                    if not config_var_defined("overscan_right", self.tmp_pathname):
-                        self.overscan_right = 24
-                    if not config_var_defined("overscan_top", self.tmp_pathname):
-                        self.overscan_top = 24
-                    if not config_var_defined("overscan_bottom", self.tmp_pathname):
-                        self.overscan_bottom = 24
+                if not config_var_defined("overscan_left", self.tmp_pathname):
+                    self.overscan_left = 24
+                if not config_var_defined("overscan_right", self.tmp_pathname):
+                    self.overscan_right = 24
+                if not config_var_defined("overscan_top", self.tmp_pathname):
+                    self.overscan_top = 24
+                if not config_var_defined("overscan_bottom", self.tmp_pathname):
+                    self.overscan_bottom = 24
+                if self.hdmi_safe1:
+                    self.disable_overscan1 = False
+                if not config_var_defined("overscan_left:1@pi4", self.tmp_pathname):
+                    self.overscan_left1 = 24
+                if not config_var_defined("overscan_right:1@pi4", self.tmp_pathname):
+                    self.overscan_right1 = 24
+                if not config_var_defined("overscan_top:1@pi4", self.tmp_pathname):
+                    self.overscan_top1 = 24
+                if not config_var_defined("overscan_bottom:1@pi4", self.tmp_pathname):
+                    self.overscan_bottom1 = 24
                 self.populate_gui_from_state(True)
             finally:
                 self.in_update=False
@@ -409,6 +629,9 @@ class MainDialog(QDialog):
             shutil.copyfile(CONFIG_PATHNAME, CONFIG_LNG_PATHNAME)
         shutil.copyfile(self.tmp_pathname, CONFIG_PATHNAME)
         os.remove(self.tmp_pathname)
+        shutil.copyfile(self.tmp_regdom_pathname, WIFI_REGDOM_PATHNAME)
+        os.remove(self.tmp_regdom_pathname)
+
         if self.save_lng:
             # make sure /boot/config.txt.lng has the newer mtime
             time.sleep(0.1)
@@ -466,7 +689,7 @@ class MainDialog(QDialog):
 """
         info_txt = """
 
-<p>Your changes will take effect when you next restart your RPi3.</p>
+<p>Your changes will take effect when you next restart your RPi.</p>
 
 """
         info2_txt = """
@@ -503,6 +726,17 @@ again from that which this session was booted under.</p>
         self.ui.hdmi_mode_cb.addItems(self.valid_modes_txt)
         self.update_everything()
 
+    def hdmi_group1_changed(self, index):
+        self.ui.hdmi_mode1_cb.clear()
+        if index == 1:
+            self.valid_modes1 = self.valid_cea_modes1
+            self.valid_modes_txt1 = self.valid_cea_modes_txt1
+        else:
+            self.valid_modes1 = self.valid_dmt_modes1
+            self.valid_modes_txt1 = self.valid_dmt_modes_txt1
+        self.ui.hdmi_mode1_cb.addItems(self.valid_modes_txt1)
+        self.update_everything()
+
     def sync_fallback_lists(self):
         # force dropdowns to update with new list
         old_hdmi_mode = self.hdmi_mode
@@ -512,15 +746,42 @@ again from that which this session was booted under.</p>
         self.populate_gui_from_state()
         self.update_everything()
 
+    def sync_fallback_lists1(self):
+        # force dropdowns to update with new list
+        old_hdmi_mode1 = self.hdmi_mode1
+        self.hdmi_group1_changed(self.hdmi_group1)
+        # may be we can still use old mode, if it exists in new mode list
+        self.hdmi_mode1 = old_hdmi_mode1
+        self.populate_gui_from_state()
+        self.update_everything()
+
     def hdmi_ignore_edid_changed(self, b):
         # repopulate the HDMI mode lists with sane defaults,
         # if ignoring EDID...
+        self.update_everything()
         self.get_system_data(fallback = self.ui.hdmi_ignore_edid_cb.isChecked())
         self.sync_fallback_lists()
+
+    def hdmi_ignore_edid1_changed(self, b):
+        # repopulate the HDMI mode lists with sane defaults,
+        # if ignoring EDID...
+        self.update_everything()
+        self.get_system_data1(fallback = self.ui.hdmi_ignore_edid1_cb.isChecked())
+        self.sync_fallback_lists1()
 
     def button_bar_button_clicked(self, button):
         if(button.text() == "Revert"):
             self.do_revert()
+
+    def layout_editor_button_clicked(self, b):
+        existing_pid = pid_of_process("arandr")
+        if existing_pid != 0:
+            bring_window_to_front(existing_pid)
+        else:
+            run_command_as(['/usr/bin/python-exec2c', 'arandr'], self.original_uid,
+                           self.original_gid, env={"PATH": self.original_home,
+                                                   "PATH": self.original_path,
+                                                   "DISPLAY": self.original_display}) 
 
     # initialization ------------------------------------------------
 
@@ -540,15 +801,15 @@ could be detected. Perhaps you have no display connected?</p>
 """
 
 <p><strong>Welcome!</strong> You can use this application to modify a
-number of important settings on your RPi3. It has been auto-started on
+number of important settings on your RPi. It has been auto-started on
 this first login, in case you would like to (e.g.) increase the
 graphics resolution of your display (via HDMI group/mode), prevent
 'clipping' at the display edges (via overscan), change the graphics
 driver, etc.<./p> Remember that you'll need to reboot before any
 changes made here take effect.</p>
 
-<p> This app may also be found under the <kbd>Applications</kbd>
-&rarr; <kbd>Settings</kbd> menu (named <kbd>RPi3 Config
+<p>This app may also be found under the <kbd>Applications</kbd>
+&rarr; <kbd>Settings</kbd> menu (named <kbd>RPi Config
 Tool</kbd> there).</p>
 
 <p>If you <em>do</em> make changes with this app and reboot, you'll be
@@ -579,13 +840,27 @@ and your last-known-good config is again in force.</p>
         self.using_fallback_hdmi_data = fallback
         while True:
             (self.valid_cea_modes, self.valid_cea_modes_txt) = \
-                fn("CEA", HDMI_BASE_MODE_TXT, self.use_fake_data)
+                fn("CEA", HDMI_BASE_MODE_TXT, self.use_fake_data, 0)
             (self.valid_dmt_modes, self.valid_dmt_modes_txt) = \
-                fn("DMT", HDMI_BASE_MODE_TXT, self.use_fake_data)
+                fn("DMT", HDMI_BASE_MODE_TXT, self.use_fake_data, 0)
             if len(self.valid_cea_modes) > 1 or len(self.valid_dmt_modes) > 1:
                 break
             fn = get_fallback_modes
             self.using_fallback_hdmi_data = True
+
+    def get_system_data1(self, fallback = False):
+        fn = get_fallback_modes if fallback else get_valid_modes
+        self.using_fallback_hdmi_data1 = fallback
+        while True:
+            (self.valid_cea_modes1, self.valid_cea_modes_txt1) = \
+                fn("CEA", HDMI_BASE_MODE_TXT, self.use_fake_data, 1)
+            (self.valid_dmt_modes1, self.valid_dmt_modes_txt1) = \
+                fn("DMT", HDMI_BASE_MODE_TXT, self.use_fake_data, 1)
+            if len(self.valid_cea_modes1) > 1 or len(self.valid_dmt_modes1) > 1:
+                break
+            fn = get_fallback_modes
+            self.using_fallback_hdmi_data1 = True
+        
 
     def setup_buttons(self):
         self.reset_b = self.ui.main_bb.button(QDialogButtonBox.Reset)
@@ -600,16 +875,39 @@ and your last-known-good config is again in force.</p>
 
     def setup_tooltips(self):
         # avoid having to duplicate text in the .ui file
+        self.ui.normal_mode1_rb.setToolTip(self.ui.normal_mode_rb.toolTip())
+        self.ui.safe_mode1_rb.setToolTip(self.ui.safe_mode_rb.toolTip())
         self.ui.hdmi_group_cb.setToolTip(self.ui.hdmi_group_lb.toolTip())
+        self.ui.hdmi_group1_lb.setToolTip(self.ui.hdmi_group_lb.toolTip())
+        self.ui.hdmi_group1_cb.setToolTip(self.ui.hdmi_group_lb.toolTip())
         self.ui.hdmi_mode_cb.setToolTip(self.ui.hdmi_mode_lb.toolTip())
+        self.ui.hdmi_mode1_lb.setToolTip(self.ui.hdmi_mode_lb.toolTip())
+        self.ui.hdmi_mode1_cb.setToolTip(self.ui.hdmi_mode_lb.toolTip())
         self.ui.graphics_driver_cb.setToolTip(self.ui.graphics_driver_lb.toolTip())
         self.ui.cma_cb.setToolTip(self.ui.cma_lb.toolTip())
         self.ui.gpu_cb.setToolTip(self.ui.gpu_lb.toolTip())
         self.ui.config_hdmi_boost_sb.setToolTip(self.ui.config_hdmi_boost_lb.toolTip())
+        self.ui.config_hdmi_boost1_lb.setToolTip(self.ui.config_hdmi_boost_lb.toolTip())
+        self.ui.config_hdmi_boost1_sb.setToolTip(self.ui.config_hdmi_boost_lb.toolTip())
+        self.ui.overscan1_gb.setToolTip(self.ui.overscan_gb.toolTip())
         self.ui.overscan_left_sb.setToolTip(self.ui.overscan_left_lb.toolTip())
+        self.ui.overscan_left1_lb.setToolTip(self.ui.overscan_left_lb.toolTip())
+        self.ui.overscan_left1_sb.setToolTip(self.ui.overscan_left_lb.toolTip())
         self.ui.overscan_right_sb.setToolTip(self.ui.overscan_right_lb.toolTip())
+        self.ui.overscan_right1_lb.setToolTip(self.ui.overscan_right_lb.toolTip())
+        self.ui.overscan_right1_sb.setToolTip(self.ui.overscan_right_lb.toolTip())
         self.ui.overscan_top_sb.setToolTip(self.ui.overscan_top_lb.toolTip())
+        self.ui.overscan_top1_lb.setToolTip(self.ui.overscan_top_lb.toolTip())
+        self.ui.overscan_top1_sb.setToolTip(self.ui.overscan_top_lb.toolTip())
         self.ui.overscan_bottom_sb.setToolTip(self.ui.overscan_bottom_lb.toolTip())
+        self.ui.overscan_bottom1_lb.setToolTip(self.ui.overscan_bottom_lb.toolTip())
+        self.ui.overscan_bottom1_sb.setToolTip(self.ui.overscan_bottom_lb.toolTip())
+        self.ui.hdmi_force_hotplug1_cb.setToolTip(self.ui.hdmi_force_hotplug_cb.toolTip())
+        self.ui.hdmi_ignore_edid1_cb.setToolTip(self.ui.hdmi_ignore_edid_cb.toolTip())
+        self.ui.config_hdmi_boost1_lb.setToolTip(self.ui.config_hdmi_boost_lb.toolTip())
+        self.ui.hdmi_drive1_cb.setToolTip(self.ui.hdmi_drive_cb.toolTip())
+        self.ui.hdmi_force_edid_audio1_cb.setToolTip(self.ui.hdmi_force_edid_audio_cb.toolTip())
+        self.ui.wifi_country_code_cb.setToolTip(self.ui.wifi_country_code_lb.toolTip())
         
     def reboot_now(self):
         if self.allow_reboot:
@@ -642,7 +940,7 @@ and your last-known-good config is again in force.</p>
 """
 
 <p><strong>Important!</strong> You have just rebooted under a modified
-RPi3 system configuration file (which has been temporarily moved to
+RPi system configuration file (which has been temporarily moved to
 <em>/boot/config.txt.tbc</em> post-reboot, pending your
 confirmation).</p>
 
@@ -734,23 +1032,49 @@ without (e.g.) a visible display.</p>
         # on a "save and exit" this time
         if Path(CONFIG_LNG_PATHNAME).is_file() and Path(CONFIG_PATHNAME).is_file():
             self.save_lng = False
+
+    def setup_wifi_country_codes(self):
+        self.country_list = get_wifi_country_list()
+        self.ui.wifi_country_code_cb.clear()
+        self.ui.wifi_country_code_cb.addItems(self.country_list)
+
+    def setup_overclock_button_group(self):
+        self.overclock_bg = QButtonGroup()
+        self.overclock_bg.addButton(self.ui.overclock0_rb, 0)
+        self.overclock_bg.addButton(self.ui.overclock1_rb, 1)
+        self.overclock_bg.addButton(self.ui.overclock2_rb, 2)
+        self.overclock_bg.addButton(self.ui.overclock3_rb, 3)
+        self.overclock_bg.addButton(self.ui.overclock4_rb, 4)
+        self.overclock_bg.buttonClicked['int'].connect(self.gui_value_changed)
     
     def __init__(self, allow_reboot = False, use_fake_data = False,
                  is_autostart = False):
+        self.in_update = True
         self.allow_reboot = allow_reboot
         self.use_fake_data = use_fake_data
         self.is_autostart = is_autostart
         self.resolve_prior_edit_without_reboot()
         self.make_tmp_copy_of_config()
+        print(self.original_uid, self.original_uid)
         super(MainDialog, self).__init__()
         self.ui = Ui_MainDialog()
         self.ui.setupUi(self)
         self.setup_buttons()
         self.setup_tooltips()
+        self.setup_wifi_country_codes()
         self.get_system_data()
+        self.get_system_data1()
+        self.setup_overclock_button_group()
+        self.in_update = False
         self.initial_update()
         self.resize(0, 0) # shrink to minimum size given fonts etc.
         self.check_running_as_root()
+        # save off the pre-sudo UID and GID
+        (self.original_uid, self.original_gid) = (int(os.environ["SUDO_UID"]),
+                                                  int(os.environ["SUDO_GID"]))
+        self.original_home = pwd.getpwuid(self.original_uid).pw_dir
+        self.original_path = os.environ["PATH"]
+        self.original_display = os.environ["DISPLAY"]
         self.first_run = self.is_first_run()
         if self.is_autostart and not self.has_pending_config_changes() and \
            not self.break_reboot_lng_restore_just_happened() and \
@@ -758,11 +1082,6 @@ without (e.g.) a visible display.</p>
             # nothing to do
             self.sys_exit(0)
         self.make_local_config_dir()
-        #if self.using_fallback_hdmi_data and not self.hdmi_ignore_edid:
-            #self.show_fallback_popup()
-            #self.ui.hdmi_ignore_edid_cb.setChecked(True)
-            #self.update_everything()
-            #self.sync_fallback_lists()
         self.show()
         if self.first_run:
             self.show_first_run_popup()

@@ -29,7 +29,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>RPi3 Configuration</string>
+   <string>RPi Configuration</string>
   </property>
   <property name="windowIcon">
    <iconset resource="pyconfig_gen.qrc">
@@ -39,20 +39,14 @@
    <bool>false</bool>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="4" column="0">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
+   <item row="0" column="0">
+    <widget class="QDialogButtonBox" name="main_bb">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::Reset</set>
      </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
+    </widget>
    </item>
-   <item row="3" column="0">
+   <item row="1" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="sizePolicy">
       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -82,7 +76,7 @@
          <item>
           <widget class="QLabel" name="graphics_driver_lb">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Graphics driver&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Choose which display driver you'd like from this dropdown. The three options are:&lt;/p&gt;&lt;ol style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;fkms-v3d&lt;/span&gt;: an accelerated, GL-based graphics driver, using DispmanX for composition ('fake' KMS); recommended for most users (required for audio out on the Pi-Top), and the shipped default on the image;&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;kms-v3d&lt;/span&gt;: as above, but using the kernel KMS driver for composition ('full' KMS); may be used by non-Pi-Top users (if display manager compositing is turned off); and&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;framebuffer&lt;/span&gt;: fallback, unaccelerated graphics driver.&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;Please note that currently, MMAL and OpenMAX IL access to the GPU is &lt;span style=&quot; font-style:italic;&quot;&gt;unavailable&lt;/span&gt; when booted into a 64-bit userspace (this issue is common to all 64-bit distros for the RPi3, not just Gentoo). &lt;/p&gt;&lt;p&gt;However, as of kernels &amp;gt;= 4.19, camera and video codec access &lt;span style=&quot; font-style:italic;&quot;&gt;are&lt;/span&gt; available in 64-bit mode, via v4l2.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Graphics driver&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Choose which display driver you'd like from this dropdown. The three options are:&lt;/p&gt;&lt;ol style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;fkms-v3d&lt;/span&gt;: an accelerated, GL-based graphics driver, using DispmanX for composition ('fake' KMS); recommended for most users (required for audio out on the Pi-Top), and the shipped default on the image;&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;kms-v3d&lt;/span&gt;: as above, but using the kernel KMS driver for composition ('full' KMS); may be used by non-Pi-Top users (if display manager compositing is turned off); and&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;framebuffer&lt;/span&gt;: fallback, unaccelerated graphics driver.&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;Please note that currently, MMAL and OpenMAX IL access to the GPU is &lt;span style=&quot; font-style:italic;&quot;&gt;unavailable&lt;/span&gt; when booted into a 64-bit userspace (this issue is common to all 64-bit distros for the RPi3/4, not just Gentoo). &lt;/p&gt;&lt;p&gt;However, as of kernels &amp;gt;= 4.19, camera and video codec access &lt;span style=&quot; font-style:italic;&quot;&gt;are&lt;/span&gt; available in 64-bit mode, via v4l2.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string>Graphics driver:</string>
@@ -120,7 +114,7 @@
          <item>
           <widget class="QLabel" name="cma_lb">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;CMA&lt;/span&gt;&lt;/p&gt;&lt;p&gt;You can set the amount of memory to allocate to the graphics driver here. CMA is a dynamic, contiguous allocator provided by the kernel.&lt;/p&gt;&lt;p&gt;For most users, it is recommended to set this to &lt;span style=&quot; font-weight:600;&quot;&gt;256 MiB&lt;/span&gt; (ensuring optimal display performance), unless you will be very short of RAM for your running applications.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;CMA&lt;/span&gt;&lt;/p&gt;&lt;p&gt;You can set the amount of memory to allocate to the graphics driver here. CMA is a dynamic, contiguous allocator provided by the kernel.&lt;/p&gt;&lt;p&gt;For most users, it is recommended to set this to &lt;span style=&quot; font-weight:600;&quot;&gt;256 MiB&lt;/span&gt; (ensuring optimal display performance), unless you will be very short of RAM for your running applications. On modern systems this may also safely be left set to &amp;quot;Unspecified&amp;quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string>CMA:</string>
@@ -167,7 +161,7 @@
          <item>
           <widget class="QLabel" name="gpu_lb">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;GPU&lt;/span&gt;&lt;/p&gt;&lt;p&gt;You can set the amount of memory to allocate to the GPU here.&lt;/p&gt;&lt;p&gt;If you plan to use the RPi3's hardware video codecs (requires kernel &amp;gt;= 4.19), then at least &lt;span style=&quot; font-weight:600;&quot;&gt;96 MiB&lt;/span&gt; is required.&lt;/p&gt;&lt;p&gt;If you plan to use the camera (requires kernel &amp;gt;= 4.19), then at least &lt;span style=&quot; font-weight:600;&quot;&gt;128 MiB&lt;/span&gt; is required.&lt;/p&gt;&lt;p&gt;Otherwise, &lt;span style=&quot; font-weight:600;&quot;&gt;16 MiB&lt;/span&gt; will suffice (note that setting this low a GPU value will force /boot/start_cd.dat to load).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;GPU&lt;/span&gt;&lt;/p&gt;&lt;p&gt;You can set the amount of memory to allocate to the GPU here.&lt;/p&gt;&lt;p&gt;If you plan to use the RPi3/4's hardware video codecs (requires kernel &amp;gt;= 4.19), then at least &lt;span style=&quot; font-weight:600;&quot;&gt;96 MiB&lt;/span&gt; is required.&lt;/p&gt;&lt;p&gt;If you plan to use the camera (requires kernel &amp;gt;= 4.19), then at least &lt;span style=&quot; font-weight:600;&quot;&gt;128 MiB&lt;/span&gt; is required.&lt;/p&gt;&lt;p&gt;Otherwise, &lt;span style=&quot; font-weight:600;&quot;&gt;16 MiB&lt;/span&gt; will suffice (note that setting this low a GPU value will force &lt;span style=&quot; font-style:italic;&quot;&gt;/boot/start_cd*.dat&lt;/span&gt; to load).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string>GPU:</string>
@@ -260,7 +254,7 @@
          <item>
           <widget class="QRadioButton" name="safe_mode_rb">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;'Safe' mode&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Choosing this &lt;span style=&quot; font-style:italic;&quot;&gt;forces&lt;/span&gt; VGA (DMT 640x480 60Hz 4:3), plus some other compatibility-related settings.&lt;/p&gt;&lt;p&gt;Use safe mode only as a last resort: most displays offer &lt;span style=&quot; font-style:italic;&quot;&gt;significantly&lt;/span&gt; higher resolution than VGA, and your RPi3 can select these higher resolutions automatically, if you choose Normal mode, and then &amp;quot;Auto-detect from EDID&amp;quot; for both HDMI group and HDMI mode from the dropdowns below.&lt;/p&gt;&lt;p&gt;Also note there are some fixed-resolution LCD screens that will not operate with the resolution and timing defaults of 'safe' mode, so it is not a guaranteed lowest common denominator.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;'Safe' mode&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Choosing this &lt;span style=&quot; font-style:italic;&quot;&gt;forces&lt;/span&gt; VGA (DMT 640x480 60Hz 4:3), plus some other compatibility-related settings.&lt;/p&gt;&lt;p&gt;Use safe mode only as a last resort: most displays offer &lt;span style=&quot; font-style:italic;&quot;&gt;significantly&lt;/span&gt; higher resolution than VGA, and your RPi can select these higher resolutions automatically, if you choose Normal mode, and then &amp;quot;Auto-detect from EDID&amp;quot; for both HDMI group and HDMI mode from the dropdowns below.&lt;/p&gt;&lt;p&gt;Also note there are some fixed-resolution LCD screens that will not operate with the resolution and timing defaults of 'safe' mode, so it is not a guaranteed lowest common denominator.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string>'Safe' mode</string>
@@ -294,7 +288,7 @@
           <bool>true</bool>
          </property>
          <property name="sizePolicy">
-          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -344,7 +338,7 @@
           <item row="1" column="0">
            <widget class="QLabel" name="hdmi_mode_lb">
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;HDMI mode&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This dropdown contains a list of resolutions, frequencies and aspect ratios (aka 'modes') your display claims to accept for the current group. Try booting under 'auto-select' first, and only if that result is unsuitable (very low-res, for example), and changing group doesn't help, proceed to setting the value manually.&lt;/p&gt;&lt;p&gt;NB: if you have &lt;span style=&quot; font-style:italic;&quot;&gt;no&lt;/span&gt; display connected to your RPi3 (for example, because you are using VNC), you will need to elect to override the EDID (checkbox below), to get a default list of modes presented here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;HDMI mode&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This dropdown contains a list of resolutions, frequencies and aspect ratios (aka 'modes') your display claims to accept for the current group. Try booting under 'auto-select' first, and only if that result is unsuitable (very low-res, for example), and changing group doesn't help, proceed to setting the value manually.&lt;/p&gt;&lt;p&gt;NB: if you have &lt;span style=&quot; font-style:italic;&quot;&gt;no&lt;/span&gt; display connected to your RPi (for example, because you are using VNC), you will need to elect to override the EDID (checkbox below), to get a default list of modes presented here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>HDMI mode:</string>
@@ -372,7 +366,7 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Additional Options&lt;/span&gt;&lt;/p&gt;&lt;p&gt;These options are overridden if 'safe' mode is set.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Additional options&lt;/span&gt;&lt;/p&gt;&lt;p&gt;These options are overridden if 'safe' mode is set.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="title">
              <string>Additional options</string>
@@ -568,7 +562,7 @@
        <item>
         <widget class="QGroupBox" name="further_settings_gb">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -606,6 +600,325 @@
          </layout>
         </widget>
        </item>
+       <item>
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="second_display_tab">
+      <attribute name="title">
+       <string>Second display</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_7">
+       <item>
+        <widget class="QGroupBox" name="hdmi1_gb">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;RPi4 only (HDMI1 port)&lt;/span&gt;&lt;/p&gt;&lt;p&gt;These settings affect the &lt;span style=&quot; font-style:italic;&quot;&gt;second&lt;/span&gt; HDMI port - this connector is only present on the RPi4, and is the one &lt;span style=&quot; font-style:italic;&quot;&gt;further&lt;/span&gt; from the USB-C power connector (the other being HDMI0, the default).&lt;/p&gt;&lt;p&gt;They have no effect on an RPi3, nor on an RPi4 which has no display connected to the HDMI1 port.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="title">
+          <string>RPi4 only (HDMI1 port)</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <layout class="QHBoxLayout" name="mode1_gb">
+            <item>
+             <widget class="QRadioButton" name="normal_mode1_rb">
+              <property name="text">
+               <string>Normal mode</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="safe_mode1_rb">
+              <property name="text">
+               <string>'Safe' mode</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_6">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="normal_mode1_gb">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="title">
+             <string>Normal mode details</string>
+            </property>
+            <layout class="QFormLayout" name="formLayout_2">
+             <item row="0" column="1">
+              <widget class="QComboBox" name="hdmi_group1_cb">
+               <item>
+                <property name="text">
+                 <string>Auto-detect from EDID</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>1: CEA (some monitors, most HDMI TVs)</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>2: DMT (most monitors, newer HDMI TVs</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="hdmi_mode1_lb">
+               <property name="text">
+                <string>HDMI mode:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="hdmi_group1_lb">
+               <property name="text">
+                <string>HDMI group:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QComboBox" name="hdmi_mode1_cb"/>
+             </item>
+             <item row="5" column="0" colspan="2">
+              <widget class="QGroupBox" name="additional_opts1_gb">
+               <property name="title">
+                <string>Addititional optiions</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_8">
+                <item>
+                 <widget class="QCheckBox" name="hdmi_force_hotplug1_cb">
+                  <property name="text">
+                   <string>Force HDMI output, even if no display detected</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="hdmi_ignore_edid1_cb">
+                  <property name="text">
+                   <string>Override HDMI display's reported EDID data (if any)</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout">
+                  <property name="spacing">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>4</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="config_hdmi_boost1_lb">
+                    <property name="text">
+                     <string>HDMI output signal level:</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QSpinBox" name="config_hdmi_boost1_sb">
+                    <property name="maximum">
+                     <number>11</number>
+                    </property>
+                    <property name="value">
+                     <number>5</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="config_hdmi_boost_status1_lb">
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_7">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item row="6" column="0" colspan="2">
+              <widget class="QGroupBox" name="overscan1_gb">
+               <property name="title">
+                <string>Overscan</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_2">
+                <item>
+                 <widget class="QLabel" name="overscan_left1_lb">
+                  <property name="toolTip">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Overscan left&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Specifies the number of pixels to skip on the left edge of the screen, when overscan is enabled.&lt;/p&gt;&lt;p&gt;Increase this value if your desktop flows off the left edge of the screen; decrease it if there is a black border between the left edge of the screen and the desktop.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="text">
+                   <string>Left:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="overscan_left1_sb">
+                  <property name="value">
+                   <number>24</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="overscan_right1_lb">
+                  <property name="toolTip">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Overscan right&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Specifies the number of pixels to skip on the right edge of the screen, when overscan is enabled.&lt;/p&gt;&lt;p&gt;Increase this value if your desktop flows off the right edge of the screen; decrease it if there is a black border between the right edge of the screen and the desktop.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="text">
+                   <string>Right:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="overscan_right1_sb">
+                  <property name="value">
+                   <number>24</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="overscan_top1_lb">
+                  <property name="toolTip">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Overscan top&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Specifies the number of pixels to skip on the top edge of the screen, when overscan is enabled.&lt;/p&gt;&lt;p&gt;Increase this value if your desktop flows off the top edge of the screen; decrease it if there is a black border between the top edge of the screen and the desktop.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="text">
+                   <string>Top:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="overscan_top1_sb">
+                  <property name="value">
+                   <number>24</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="overscan_bottom1_lb">
+                  <property name="toolTip">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Overscan bottom&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Specifies the number of pixels to skip on the bottom edge of the screen, when overscan is enabled.&lt;/p&gt;&lt;p&gt;Increase this value if your desktop flows off the bottom edge of the screen; decrease it if there is a black border between the bottom edge of the screen and the text.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="text">
+                   <string>Bottom:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="overscan_bottom1_sb">
+                  <property name="value">
+                   <number>24</number>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_8">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="further_settings2_gb">
+            <property name="title">
+             <string>Further settings</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_9">
+             <item>
+              <widget class="QCheckBox" name="hdmi_drive1_cb">
+               <property name="text">
+                <string>Force audio output in DMT modes</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="hdmi_force_edid_audio1_cb">
+               <property name="text">
+                <string>Assume display supports audio (partial EDID override)</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_5">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="wifi_tab">
@@ -628,7 +941,7 @@
           <item>
            <widget class="QCheckBox" name="spi_cb">
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Enable SPI&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When checked, the RPi3's SPI (Serial Peripheral Interface) will be enabled.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Enable SPI&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When checked, the RPi's SPI (Serial Peripheral Interface) will be enabled.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>Enable SPI</string>
@@ -638,7 +951,7 @@
           <item>
            <widget class="QCheckBox" name="i2c_cb">
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Enable I&lt;/span&gt;&lt;span style=&quot; font-weight:600; vertical-align:super;&quot;&gt;2&lt;/span&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;C&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When checked, the RPi3's I&lt;span style=&quot; vertical-align:super;&quot;&gt;2&lt;/span&gt;C (Inter-Integrated Circuit, pronounced eye-squared-see) interface will be enabled.&lt;/p&gt;&lt;p&gt;Despite the similar name, it is unrelated to the I&lt;span style=&quot; vertical-align:super;&quot;&gt;2&lt;/span&gt;S interface, below.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Enable I&lt;/span&gt;&lt;span style=&quot; font-weight:600; vertical-align:super;&quot;&gt;2&lt;/span&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;C&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When checked, the RPi's I&lt;span style=&quot; vertical-align:super;&quot;&gt;2&lt;/span&gt;C (Inter-Integrated Circuit, pronounced eye-squared-see) interface will be enabled.&lt;/p&gt;&lt;p&gt;Despite the similar name, it is unrelated to the I&lt;span style=&quot; vertical-align:super;&quot;&gt;2&lt;/span&gt;S interface, below.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>Enable I2C</string>
@@ -648,7 +961,7 @@
           <item>
            <widget class="QCheckBox" name="i2s_cb">
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Enable I&lt;/span&gt;&lt;span style=&quot; font-weight:600; vertical-align:super;&quot;&gt;2&lt;/span&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;S&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When checked, the RPi3's I&lt;span style=&quot; vertical-align:super;&quot;&gt;2&lt;/span&gt;S (Inter-IC Sound, pronounced eye-squared-ess) interface will be enabled.&lt;/p&gt;&lt;p&gt;Despite the similar name, it is unrelated to the I&lt;span style=&quot; vertical-align:super;&quot;&gt;2&lt;/span&gt;C interface, above.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Enable I&lt;/span&gt;&lt;span style=&quot; font-weight:600; vertical-align:super;&quot;&gt;2&lt;/span&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;S&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When checked, the RPi's I&lt;span style=&quot; vertical-align:super;&quot;&gt;2&lt;/span&gt;S (Inter-IC Sound, pronounced eye-squared-ess) interface will be enabled.&lt;/p&gt;&lt;p&gt;Despite the similar name, it is unrelated to the I&lt;span style=&quot; vertical-align:super;&quot;&gt;2&lt;/span&gt;C interface, above.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>Enable I2S</string>
@@ -658,7 +971,7 @@
           <item>
            <widget class="QCheckBox" name="bluetooth_cb">
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Enable Bluetooth&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When checked, the RPi3's inbuilt Bluetooth will be enabled. When unchecked, UART0/ttyAMA0 over GPIOs 14 &amp;amp; 15 becomes usable instead.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;NB&lt;/span&gt;: if do &lt;span style=&quot; font-style:italic;&quot;&gt;not&lt;/span&gt; wish to use Bluetooth, remember to also disable the OpenRC service that initialises the modem, so it doesn't utilize the UART. To do so, issue:&lt;br/&gt;&lt;span style=&quot; font-family:'monospace';&quot;&gt;sudo rc-service rpi3-bluetooth stop&lt;/span&gt;&lt;br/&gt;followed by:&lt;br/&gt;&lt;span style=&quot; font-family:'monospace';&quot;&gt;sudo rc-update del rpi3-bluetooth default&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Enable Bluetooth&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When checked, the RPi's inbuilt Bluetooth will be enabled. When unchecked, UART0/ttyAMA0 over GPIOs 14 &amp;amp; 15 becomes usable instead.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;NB&lt;/span&gt;: if do &lt;span style=&quot; font-style:italic;&quot;&gt;not&lt;/span&gt; wish to use Bluetooth, remember to also disable the OpenRC service that initialises the modem, so it doesn't utilize the UART. To do so, issue:&lt;br/&gt;&lt;span style=&quot; font-family:'monospace';&quot;&gt;sudo rc-service rpi3-bluetooth stop&lt;/span&gt;&lt;br/&gt;followed by:&lt;br/&gt;&lt;span style=&quot; font-family:'monospace';&quot;&gt;sudo rc-update del rpi3-bluetooth default&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>Enable Bluetooth (disables serial port)</string>
@@ -668,7 +981,7 @@
           <item>
            <widget class="QCheckBox" name="audio_cb">
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Enable audio&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When checked, the RPi3's onboard ALSA interface will be enabled.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Enable audio&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When checked, the RPi's onboard ALSA interface will be enabled.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>Enable audio</string>
@@ -678,7 +991,7 @@
           <item>
            <widget class="QCheckBox" name="camera_cb">
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Enable camera&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When checked, the RPi3's onboard camera interface will be enabled. Requires kernel &amp;gt;=4.19 to operate.&lt;/p&gt;&lt;p&gt;You must allocate at least 128 MiB of GPU memory when using the camera.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Enable camera&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When checked, the RPi's onboard camera interface will be enabled. Requires kernel &amp;gt;=4.19 to operate.&lt;/p&gt;&lt;p&gt;You must allocate at least 128 MiB of GPU memory when using the camera.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>Enable camera</string>
@@ -703,19 +1016,183 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tab_2">
+      <attribute name="title">
+       <string>WiFi</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_12">
+       <item>
+        <widget class="QGroupBox" name="wifi_setup_gb">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>WiFi settings</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_6">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetDefaultConstraint</enum>
+          </property>
+          <item>
+           <widget class="QLabel" name="wifi_country_code_lb">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Regulatory domain&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Using this dropdown, you can select the appropriate WiFi regulatory domain.&lt;/p&gt;&lt;p&gt;This enables the use of WiFi channels (frequencies) and power levels appropriate to your country.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>Regulatory domain:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="wifi_country_code_cb">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>Pi4 Tuning</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_10">
+       <item>
+        <widget class="QGroupBox" name="groupBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Overclocking&lt;/span&gt;&lt;/p&gt;&lt;p&gt;It is possible to &lt;span style=&quot; font-style:italic;&quot;&gt;overclock&lt;/span&gt; the Pi4 without voiding your warranty. On the image as shipped, no overclocking is set, but you can use these radio buttons to select a more aggressive profile. Overclocking generally means that applications will run more quickly (although this will vary from case to case). The settings below have no effect on a Pi3.&lt;/p&gt;&lt;p&gt;There is a risk that your system will fail to boot at the faster profiles - if so, just comment out the arm&lt;span style=&quot; font-style:italic;&quot;&gt;_freq&lt;/span&gt; and &lt;span style=&quot; font-style:italic;&quot;&gt;gpu_freq&lt;/span&gt; settings in &lt;span style=&quot; font-style:italic;&quot;&gt;/boot/config.txt&lt;/span&gt;, and try again.&lt;/p&gt;&lt;p&gt;Most Pi4s should boot fine with the &amp;quot;Mild&amp;quot; or &amp;quot;Mid&amp;quot; overclocking settings. Your system will use more power, and run hotter with overclocking in use, so an official power supply, and possibly some active cooling, may be necessary to fully exploit the increased performance (since the system will automatically 'throttle' to prevent damage should the temperature get too high).&lt;/p&gt;&lt;p&gt;For avoidance of doubt, none of the below settings set&lt;span style=&quot; font-style:italic;&quot;&gt; force_turbo=1&lt;/span&gt;, nor do they set an &lt;span style=&quot; font-style:italic;&quot;&gt;over_voltage&amp;gt;6&lt;/span&gt; (&amp;gt; +0.15V), so per current RPF advice should not affect your warranty.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;NB: &lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;the above notwithstanding, use settings higher than &amp;quot;None&amp;quot; at your own risk!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="title">
+          <string>Overclocking</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_11">
+          <item>
+           <widget class="QRadioButton" name="overclock0_rb">
+            <property name="text">
+             <string>None (1500MHz CPU, 500MHz GPU, +0.00V)</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="overclock1_rb">
+            <property name="text">
+             <string>Mild (1750MHz CPU, 500MHz GPU, +0.05V)</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="overclock2_rb">
+            <property name="text">
+             <string>Mid (1750MHz CPU, 600MHz GPU, +0.10V)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="overclock3_rb">
+            <property name="text">
+             <string>Extreme (2000MHz CPU, 600MHz GPU, +0.15V)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="overclock4_rb">
+            <property name="text">
+             <string>Custom (Settings in config.txt not overridden)</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+         <zorder>overclock3_rb</zorder>
+         <zorder>overclock1_rb</zorder>
+         <zorder>overclock2_rb</zorder>
+         <zorder>overclock0_rb</zorder>
+         <zorder>overclock4_rb</zorder>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
-   <item row="0" column="0">
-    <widget class="QDialogButtonBox" name="main_bb">
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::Reset</set>
+   <item row="3" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_7">
+     <property name="topMargin">
+      <number>5</number>
      </property>
-    </widget>
+     <item>
+      <widget class="QPushButton" name="layout_editor_pb">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Launch screen layout editor&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This button starts the &lt;span style=&quot; font-weight:600;&quot;&gt;arandr&lt;/span&gt; program, which you can use to specify how your (possibly dual-monitor) display is laid out (horizontally stacked, vertically stacked, rotated &lt;span style=&quot; font-style:italic;&quot;&gt;etc&lt;/span&gt;.). You can also use this program to change the &lt;span style=&quot; font-style:italic;&quot;&gt;resolution&lt;/span&gt; of the attached HDMI display(s), without rebooting (provided the desired resolution is one the target display reported as being supported within the selected-at-boot HDMI group (CEA or DMT)).&lt;/p&gt;&lt;p&gt;You can &lt;span style=&quot; font-weight:600;&quot;&gt;save&lt;/span&gt; your changes within the arandr program to a script file. If you do so to the location &lt;span style=&quot; font-style:italic;&quot;&gt;~/.screenlayout/default.sh&lt;/span&gt;, they will automatically be applied for you each login.&lt;/p&gt;&lt;p&gt;The arandr program can also be started via the menu (it lives at &lt;span style=&quot; font-family:'monospace';&quot;&gt;Applications&lt;/span&gt; → &lt;span style=&quot; font-family:'monospace';&quot;&gt;Settings&lt;/span&gt; → &lt;span style=&quot; font-family:'monospace';&quot;&gt;ARandR&lt;/span&gt;).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>Launch screen layout editor</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_9">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
  <tabstops>
-  <tabstop>tabWidget</tabstop>
   <tabstop>graphics_driver_cb</tabstop>
   <tabstop>cma_cb</tabstop>
   <tabstop>normal_mode_rb</tabstop>
@@ -749,8 +1226,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>271</x>
-     <y>32</y>
+     <x>275</x>
+     <y>16</y>
     </hint>
     <hint type="destinationlabel">
      <x>262</x>
@@ -765,8 +1242,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>216</x>
-     <y>32</y>
+     <x>220</x>
+     <y>16</y>
     </hint>
     <hint type="destinationlabel">
      <x>198</x>
@@ -781,8 +1258,8 @@
    <slot>button_bar_button_clicked(QAbstractButton*)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>139</x>
-     <y>32</y>
+     <x>143</x>
+     <y>16</y>
     </hint>
     <hint type="destinationlabel">
      <x>149</x>
@@ -797,8 +1274,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>361</x>
-     <y>497</y>
+     <x>374</x>
+     <y>397</y>
     </hint>
     <hint type="destinationlabel">
      <x>552</x>
@@ -813,8 +1290,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>299</x>
-     <y>380</y>
+     <x>181</x>
+     <y>316</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -829,8 +1306,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>203</x>
-     <y>96</y>
+     <x>113</x>
+     <y>61</y>
     </hint>
     <hint type="destinationlabel">
      <x>400</x>
@@ -845,8 +1322,8 @@
    <slot>hdmi_group_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>435</x>
-     <y>177</y>
+     <x>485</x>
+     <y>130</y>
     </hint>
     <hint type="destinationlabel">
      <x>399</x>
@@ -861,8 +1338,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>339</x>
-     <y>96</y>
+     <x>190</x>
+     <y>61</y>
     </hint>
     <hint type="destinationlabel">
      <x>396</x>
@@ -877,8 +1354,8 @@
    <slot>gui_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>211</x>
-     <y>124</y>
+     <x>113</x>
+     <y>83</y>
     </hint>
     <hint type="destinationlabel">
      <x>301</x>
@@ -893,8 +1370,8 @@
    <slot>gui_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>106</x>
-     <y>109</y>
+     <x>62</x>
+     <y>83</y>
     </hint>
     <hint type="destinationlabel">
      <x>298</x>
@@ -909,8 +1386,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>442</x>
-     <y>210</y>
+     <x>492</x>
+     <y>155</y>
     </hint>
     <hint type="destinationlabel">
      <x>397</x>
@@ -925,8 +1402,8 @@
    <slot>gui_bool_changed(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>80</x>
-     <y>362</y>
+     <x>100</x>
+     <y>331</y>
     </hint>
     <hint type="destinationlabel">
      <x>482</x>
@@ -941,8 +1418,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>219</x>
-     <y>380</y>
+     <x>131</x>
+     <y>316</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -957,8 +1434,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>130</x>
-     <y>380</y>
+     <x>77</x>
+     <y>316</y>
     </hint>
     <hint type="destinationlabel">
      <x>476</x>
@@ -973,8 +1450,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>228</x>
-     <y>321</y>
+     <x>126</x>
+     <y>249</y>
     </hint>
     <hint type="destinationlabel">
      <x>472</x>
@@ -989,8 +1466,8 @@
    <slot>hdmi_ignore_edid_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>403</x>
-     <y>291</y>
+     <x>423</x>
+     <y>207</y>
     </hint>
     <hint type="destinationlabel">
      <x>476</x>
@@ -1005,8 +1482,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>374</x>
-     <y>265</y>
+     <x>394</x>
+     <y>190</y>
     </hint>
     <hint type="destinationlabel">
      <x>470</x>
@@ -1021,8 +1498,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>398</x>
-     <y>380</y>
+     <x>240</x>
+     <y>316</y>
     </hint>
     <hint type="destinationlabel">
      <x>473</x>
@@ -1037,8 +1514,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>266</x>
-     <y>471</y>
+     <x>279</x>
+     <y>380</y>
     </hint>
     <hint type="destinationlabel">
      <x>546</x>
@@ -1053,8 +1530,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>138</x>
-     <y>122</y>
+     <x>151</x>
+     <y>70</y>
     </hint>
     <hint type="destinationlabel">
      <x>558</x>
@@ -1069,8 +1546,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>337</x>
-     <y>148</y>
+     <x>350</x>
+     <y>87</y>
     </hint>
     <hint type="destinationlabel">
      <x>525</x>
@@ -1085,8 +1562,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>420</x>
-     <y>192</y>
+     <x>433</x>
+     <y>121</y>
     </hint>
     <hint type="destinationlabel">
      <x>410</x>
@@ -1101,8 +1578,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>188</x>
-     <y>159</y>
+     <x>201</x>
+     <y>104</y>
     </hint>
     <hint type="destinationlabel">
      <x>550</x>
@@ -1117,8 +1594,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>279</x>
-     <y>218</y>
+     <x>292</x>
+     <y>138</y>
     </hint>
     <hint type="destinationlabel">
      <x>554</x>
@@ -1133,8 +1610,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>458</x>
-     <y>89</y>
+     <x>267</x>
+     <y>61</y>
     </hint>
     <hint type="destinationlabel">
      <x>549</x>
@@ -1149,12 +1626,268 @@
    <slot>camera_cb_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>129</x>
-     <y>244</y>
+     <x>142</x>
+     <y>155</y>
     </hint>
     <hint type="destinationlabel">
      <x>130</x>
      <y>608</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>normal_mode1_rb</sender>
+   <signal>clicked()</signal>
+   <receiver>MainDialog</receiver>
+   <slot>gui_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>43</x>
+     <y>68</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>166</x>
+     <y>1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>safe_mode1_rb</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>MainDialog</receiver>
+   <slot>gui_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>98</x>
+     <y>70</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>2</x>
+     <y>126</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hdmi_group1_cb</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>MainDialog</receiver>
+   <slot>hdmi_group1_changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>133</x>
+     <y>118</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-4</x>
+     <y>218</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hdmi_mode1_cb</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>MainDialog</receiver>
+   <slot>gui_value_changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>81</x>
+     <y>147</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1</x>
+     <y>180</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hdmi_force_hotplug1_cb</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>MainDialog</receiver>
+   <slot>gui_value_changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>84</x>
+     <y>182</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>0</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hdmi_ignore_edid1_cb</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>MainDialog</receiver>
+   <slot>hdmi_ignore_edid1_changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>166</x>
+     <y>200</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>326</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>config_hdmi_boost1_sb</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainDialog</receiver>
+   <slot>gui_value_changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>110</x>
+     <y>231</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-3</x>
+     <y>308</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>overscan1_gb</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainDialog</receiver>
+   <slot>gui_bool_changed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>32</x>
+     <y>250</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-3</x>
+     <y>295</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>overscan_left1_sb</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainDialog</receiver>
+   <slot>gui_value_changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>56</x>
+     <y>278</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>0</x>
+     <y>372</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>overscan_right1_sb</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainDialog</receiver>
+   <slot>gui_value_changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>114</x>
+     <y>279</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-13</x>
+     <y>405</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>overscan_top1_sb</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainDialog</receiver>
+   <slot>gui_value_changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>160</x>
+     <y>276</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1</x>
+     <y>419</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>overscan_bottom1_sb</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainDialog</receiver>
+   <slot>gui_value_changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>224</x>
+     <y>278</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1</x>
+     <y>413</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hdmi_drive1_cb</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>MainDialog</receiver>
+   <slot>gui_value_changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>61</x>
+     <y>588</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-4</x>
+     <y>613</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hdmi_force_edid_audio1_cb</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>MainDialog</receiver>
+   <slot>gui_value_changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>129</x>
+     <y>604</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-3</x>
+     <y>638</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>layout_editor_pb</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>MainDialog</receiver>
+   <slot>layout_editor_button_clicked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>515</x>
+     <y>642</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>520</x>
+     <y>667</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>wifi_country_code_cb</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>MainDialog</receiver>
+   <slot>gui_value_changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>112</x>
+     <y>72</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-17</x>
+     <y>139</y>
     </hint>
    </hints>
   </connection>
@@ -1167,5 +1900,8 @@
   <slot>gui_value_changed(int)</slot>
   <slot>gui_bool_changed(bool)</slot>
   <slot>camera_cb_value_changed(int)</slot>
+  <slot>hdmi_group1_changed(int)</slot>
+  <slot>hdmi_ignore_edid1_changed(int)</slot>
+  <slot>layout_editor_button_clicked(bool)</slot>
  </slots>
 </ui>

@@ -2,7 +2,7 @@
 #
 # Misc utilties for working with RPi config.txt files
 #
-# Copyright (c) 2018 sakaki <sakaki@deciban.com>
+# Copyright (c) 2018-19 sakaki <sakaki@deciban.com>
 # License: GPL v3+
 # NO WARRANTY
 
@@ -28,22 +28,67 @@ def make_real_user_owned(path):
     gid = os.getenv("SUDO_GID") or 0
     os.chown(path, int(uid), int(gid))
 
-def set_config_var(key, value, path, check_first = True, int_cast = True):
+def parse_key(fullkey, prevfilt = "all"):
+    # only switch filter for all, none or pi.*
+    find_keysplit=re.compile(f"([^@]+)@([^@]+)")
+    m = find_keysplit.match(fullkey)
+    if m:
+        return (m.group(1), m.group(2))
+    else:
+        return (fullkey, "all")
+
+def set_config_var(qualified_key, value, path, check_first = True, int_cast = True):
+    # you can qualify a key filter thus: "foo@pi4"; "foo" implies "foo@all"
     made_change = False
+    (key, filt) = parse_key(qualified_key)
+    current_filt = "all"
     tmp_path = path + ".bak"
     req = "?" if "=" in key else ""
     assign = "" if "=" in key else "="
     # avoid unnecessary writes to filesystemkey, value, path, check_first, int_cast)
-    if check_first and get_config_var(key, path, int_cast = int_cast) == value:
+    if check_first and get_config_var(qualified_key, path, int_cast = int_cast) == value:
         return
-    find_key=re.compile(f"#?\s*{key}[=,]{req}.*$")
-    find_uncommented_key=re.compile(f"\s*{key}[=,]{req}.*$")
+    find_key=re.compile(f"^#?\s*{key}[=,]{req}.*$")
+    find_uncommented_key=re.compile(f"^\s*{key}[=,]{req}.*$")
+    find_filter=re.compile(f"^\s*\[([^[]+)\]")
     def_line = f"{key}{assign}{value}\n"
     try:
+        # record last line where the target filter is in scope
+        # lines are indexed from 1
+        lno = 0
+        lng_lno = None
+        with open(path, "r") as in_file:
+            for line in in_file:
+                lno += 1
+                m = find_filter.match(line)
+                if m:
+                    f = m.group(1)
+                    if f == "all" or f == "none" or f.find("pi") == 0:
+                        if current_filt != f and current_filt == filt:
+                            # no longer in the goal filter, so the
+                            # previous line is the last in block
+                            lng_lno = lno - 1
+                        current_filt = f
+        # deal with last line being a filter change, to the
+        # one we want
+        if current_filt == filt:
+            lng_lno = lno
+        # now run through and actually do the edit
+        current_filt = "all"
+        # now we look for the target tag; but if we haven't found
+        # it by the time we get to line lng_lno, we insert it
+        # immediately
         with open(path, "r") as in_file:
             with open(tmp_path, "w+") as out_file:
+                lno = 0
                 for line in in_file:
-                    if find_key.match(line):
+                    lno += 1
+                    m = find_filter.match(line)
+                    if m:
+                        f = m.group(1)
+                        if f == "all" or f == "none" or f.find("pi") == 0:
+                            current_filt = f
+                    elif current_filt != "none" and current_filt == filt and find_key.match(line):
                         if not made_change:
                             line = def_line
                             made_change = True
@@ -52,9 +97,19 @@ def set_config_var(key, value, path, check_first = True, int_cast = True):
                             # comment this out
                             line = f"#{line}"
                     print(line, end="", file=out_file)
+                    if not made_change and lno == lng_lno:
+                        # at the end of the last block
+                        # featuring this filter, so add now
+                        print(def_line, end="", file=out_file)
+                        made_change = True
+
                 if not made_change:
-                    # got to end without finding key, so set it now
+                    # got to EOF without finding key, so set it now
+                    if current_filt != filt :
+                        # got to activate the group before adding anything
+                        print(f"[{filt}]", file=out_file)
                     print(def_line, end="", file=out_file)
+
         # commit changes atomically
         shutil.move(tmp_path, path)
     finally:
@@ -62,36 +117,58 @@ def set_config_var(key, value, path, check_first = True, int_cast = True):
         if  Path(tmp_path).is_file():
             os.remove(tmp_path)
 
-def get_config_var(key, path, default = None, int_cast = True):
+def get_config_var(qualified_key, path, default = None, int_cast = True):
     # default is returned if key not defined or cast fails
+    (key, filt) = parse_key(qualified_key)
+    current_filt = "all"
     req = "?" if "=" in key else ""
-    find_uncommented_key=re.compile(f"\s*{key}[=,]{req}([^\n]*)$")
+    find_uncommented_key=re.compile(f"^\s*{key}[=,]{req}([^\n]*)$")
+    find_filter=re.compile(f"^\s*\[([^[]+)\]")
+    in_subgroup = False
     with open(path, "r") as in_file:
         for line in in_file:
-            m  = find_uncommented_key.match(line)
+            m = find_filter.match(line)
             if m:
-                v = m.group(1)
-                if int_cast:
-                    try:
-                        v = int(v)
-                    except (TypeError, ValueError):
-                        v = default
-                return(v)
+                f = m.group(1)
+                if f == "all" or f == "none" or f.find("pi") == 0:
+                    current_filt = f
+                    continue
+            if current_filt == "none":
+                continue
+            if current_filt == filt:
+                # in the correct section, look for a key match
+                m = find_uncommented_key.match(line)
+                if m:
+                    v = m.group(1)
+                    if int_cast:
+                        try:
+                            v = int(v)
+                        except (TypeError, ValueError):
+                            v = default
+                    return(v)
     return(default)
 
-def comment_config_var(key, path, check_first = True):
+def comment_config_var(qualified_key, path, check_first = True):
+    (key, filt) = parse_key(qualified_key)
+    current_filt = "all"
     tmp_path = path + ".bak"
     req = "?" if "=" in key else ""
-    find_uncommented_key=re.compile(f"\s*{key}[=,]{req}.*$")
+    find_uncommented_key=re.compile(f"^\s*{key}[=,]{req}.*$")
+    find_filter=re.compile(f"^\s*\[([^[]+)\]")
     # avoid unnecessary writes to filesystem
-    if check_first and not config_var_defined(key, path):
+    if check_first and not config_var_defined(qualified_key, path):
         return
     try:
         with open(path, "r") as in_file:
             with open(tmp_path, "w+") as out_file:
                 for line in in_file:
-                    if find_uncommented_key.match(line):
-                        line = f"#{line}"
+                    m = find_filter.match(line)
+                    if m:
+                        f = m.group(1)
+                        if f == "all" or f == "none" or f.find("pi") == 0:
+                            current_filt = f
+                    elif current_filt == filt and find_uncommented_key.match(line):
+                            line = f"#{line}"
                     print(line, end="", file=out_file)
         # commit changes atomically
         shutil.move(tmp_path, path)
@@ -100,14 +177,24 @@ def comment_config_var(key, path, check_first = True):
         if Path(tmp_path).is_file():
             os.remove(tmp_path)
 
-def config_var_defined(key, path):
+def config_var_defined(qualified_key, path):
+    (key, filt) = parse_key(qualified_key)
+    current_filt = "all"
     # return False if key absent or commented out (all instances) in config
     req = "?" if "=" in key else ""
-    find_uncommented_key=re.compile(f"\s*{key}={req}.*$")
+    find_uncommented_key=re.compile(f"^\s*{key}={req}.*$")
+    find_filter=re.compile(f"^\s*\[([^[]+)\]")
+    in_subgroup = False
     with open(path, "r") as in_file:
         for line in in_file:
-            if find_uncommented_key.match(line):
-                return(True)
+            m = find_filter.match(line)
+            if m:
+                f = m.group(1)
+                if f == "all" or f == "none" or f.find("pi") == 0:
+                    current_filt = f
+            elif current_filt != "none" and current_filt == filt:
+                if find_uncommented_key.match(line):
+                    return(True)
     return(False)
 
 
@@ -120,19 +207,39 @@ def set_or_comment_config_var(key, value, default, path, check_first = True):
 
 def config_files_differ_materially(path1, path2, print_debug = False):
     # return True iff sorted, space-stripped non-commment lines differ
-    find_uncommented_key=re.compile("([^#])\s*([^=,]+[=,][^\n]*)\s*$")
+    find_uncommented_key=re.compile("^\s*([^#=,]+)([=,][^\n]*)\s*$")
+    find_filter=re.compile(f"^\s*\[([^[]+)\]")
+    current_filt="all"
+    in_subgroup = False
     active_lines1 = []
     active_lines2 = []
     with open(path1, "r") as in_file1:
         for line in in_file1:
-           m = find_uncommented_key.match(line)
-           if m:
-               active_lines1 += [m.group(1).lstrip() + m.group(2)]
+            m = find_filter.match(line)
+            if m:
+                f = m.group(1)
+                if f == "all" or f == "none" or f.find("pi") == 0:
+                    current_filt = f
+                    continue
+            if current_filt == "none":
+                continue
+            m = find_uncommented_key.match(line)
+            if m:
+                active_lines1 += [m.group(1).lstrip() + "@" + current_filt + m.group(2)]
+    current_filt = "all"
     with open(path2, "r") as in_file2:
         for line in in_file2:
-           m = find_uncommented_key.match(line)
-           if m:
-               active_lines2 += [m.group(1).lstrip() + m.group(2)]
+            m = find_filter.match(line)
+            if m:
+                f = m.group(1)
+                if f == "all" or f == "none" or f.find("pi") == 0:
+                    current_filt = f
+                    continue
+            if current_filt == "none":
+                continue
+            m = find_uncommented_key.match(line)
+            if m:
+                active_lines2 += [m.group(1).lstrip() + "@" + current_filt + m.group(2)]
     active_lines1.sort()
     active_lines2.sort()
     if print_debug:
@@ -184,15 +291,29 @@ DMT_FALLBACK_MODES_TXT = [
 def do_reboot():
     subprocess.run(['/sbin/reboot'])
 
-def get_valid_modes(target, base_mode_txt, use_fake_data = False):
+def get_valid_modes(target, base_mode_txt, use_fake_data = False, hdmi_index = 0):
     find_modelines=re.compile("mode\s+(\d+):\s+(\d+)x(\d+)\s+@\s+(\d+)Hz\s+(\d+):(\d+),.*progressive")
     find_preferred=re.compile("prefer")
     find_native=re.compile("native")
+    find_display=re.compile(f"Display Number (\d+), type HDMI {hdmi_index}")
+    
+    # we begin by finding the HDMI display number corresponding to the given index
     if use_fake_data and Path(f"/usr/share/{app_name()}/tvservice_output").is_dir():
-        output= subprocess.run(["cat", f"/usr/share/{app_name()}/tvservice_output/{target.lower()}1.txt"],
+        output= subprocess.run(["cat", f"/usr/share/{app_name()}/tvservice_output/list.txt"],
+                               stdout=subprocess.PIPE).stdout.decode('utf-8')
+    else:
+        output= subprocess.run(["tvservice", "-l"],
+                               stdout=subprocess.PIPE).stdout.decode('utf-8')
+    m = find_display.search(output)
+    if m:
+        device_id = int(m.group(1))
+    else:
+        device_id = 999
+    if use_fake_data and Path(f"/usr/share/{app_name()}/tvservice_output").is_dir():
+        output= subprocess.run(["cat", f"/usr/share/{app_name()}/tvservice_output/{target.lower()}{hdmi_index}.txt"],
                                stdout=subprocess.PIPE).stdout.decode('utf-8').splitlines()
     else:
-        output= subprocess.run(["tvservice", "-m", target],
+        output= subprocess.run(["tvservice", "-v", device_id, "-m", target],
                                stdout=subprocess.PIPE).stdout.decode('utf-8').splitlines()
     valid_modes = []
     valid_modes_txt = []
@@ -214,7 +335,7 @@ def get_valid_modes(target, base_mode_txt, use_fake_data = False):
     return([(0, 0, 0, 0, 0, 0, False, False)] + valid_modes,
                [base_mode_txt] + valid_modes_txt)
 
-def get_fallback_modes(target, base_mode_txt, use_fake_data = False):
+def get_fallback_modes(target, base_mode_txt, use_fake_data = False, hdmi_index = 0):
     # generate a fallback list from the group, used when no
     # EDID preferences as to mode are available
     if target == "CEA":
@@ -225,3 +346,36 @@ def get_fallback_modes(target, base_mode_txt, use_fake_data = False):
         fallback_modes_txt = DMT_FALLBACK_MODES_TXT
     return([(0, 0, 0, 0, 0, 0, False, False)] + fallback_modes,
            [base_mode_txt] + fallback_modes_txt)
+
+def get_wifi_country_list():
+    country_list=["00: World (Not Recommended)"]
+    find_listing=re.compile(f"^([A-Z][A-Z])\s+(.*)$")
+    with open("/usr/share/zoneinfo/iso3166.tab", "r") as in_file1:
+        for line in in_file1:
+            m = find_listing.match(line)
+            if m:
+                country_list += [m.group(1) + ": " + m.group(2)]
+    return country_list
+
+def pid_of_process(pname):
+    ret = subprocess.run(["pgrep", "-x", pname],
+                               stdout=subprocess.PIPE)
+    if ret.returncode == 1:
+        return 0
+    else:
+        return(int(ret.stdout.decode('utf-8').splitlines()[0]))
+
+def run_command_as(cmd, uid, gid, other_groups=[], env=None):
+    def demote_user():
+        os.setgid(gid)
+        os.setgroups(other_groups)
+        os.setuid(uid)
+    if env is None:
+        p = subprocess.Popen(cmd, preexec_fn=demote_user, shell=False)
+    else:
+        p = subprocess.Popen(cmd, preexec_fn=demote_user, shell=False, env=env)
+
+def bring_window_to_front(pid):
+    subprocess.run("wmctrl -ia $(wmctrl -lp | awk -vpid=" + str(pid) + \
+                   " '$3==pid {print $1; exit}')",
+                   shell=True)
