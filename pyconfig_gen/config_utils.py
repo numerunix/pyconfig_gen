@@ -313,7 +313,7 @@ def get_valid_modes(target, base_mode_txt, use_fake_data = False, hdmi_index = 0
         output= subprocess.run(["cat", f"/usr/share/{app_name()}/tvservice_output/{target.lower()}{hdmi_index}.txt"],
                                stdout=subprocess.PIPE).stdout.decode('utf-8').splitlines()
     else:
-        output= subprocess.run(["tvservice", "-v", device_id, "-m", target],
+        output= subprocess.run(["tvservice", "-v", str(device_id), "-m", target],
                                stdout=subprocess.PIPE).stdout.decode('utf-8').splitlines()
     valid_modes = []
     valid_modes_txt = []

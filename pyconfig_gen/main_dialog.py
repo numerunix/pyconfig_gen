@@ -1055,7 +1055,6 @@ without (e.g.) a visible display.</p>
         self.is_autostart = is_autostart
         self.resolve_prior_edit_without_reboot()
         self.make_tmp_copy_of_config()
-        print(self.original_uid, self.original_uid)
         super(MainDialog, self).__init__()
         self.ui = Ui_MainDialog()
         self.ui.setupUi(self)
