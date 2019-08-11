@@ -781,7 +781,8 @@ again from that which this session was booted under.</p>
             run_command_as(['/usr/bin/python-exec2c', 'arandr'], self.original_uid,
                            self.original_gid, env={"PATH": self.original_home,
                                                    "PATH": self.original_path,
-                                                   "DISPLAY": self.original_display}) 
+                                                   "DISPLAY": self.original_display,
+                                                   "XAUTHORITY": os.getenv("XAUTHORITY")})
 
     # initialization ------------------------------------------------
 
