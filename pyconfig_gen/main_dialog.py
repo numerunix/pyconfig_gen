@@ -782,7 +782,7 @@ again from that which this session was booted under.</p>
                            self.original_gid, env={"PATH": self.original_home,
                                                    "PATH": self.original_path,
                                                    "DISPLAY": self.original_display,
-                                                   "XAUTHORITY": os.getenv("XAUTHORITY")})
+                                                   "XAUTHORITY": os.getenv("XAUTHORITY") or ""})
 
     # initialization ------------------------------------------------
 

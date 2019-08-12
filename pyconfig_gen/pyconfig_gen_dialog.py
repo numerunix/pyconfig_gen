@@ -12,7 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainDialog(object):
     def setupUi(self, MainDialog):
         MainDialog.setObjectName("MainDialog")
-        MainDialog.resize(554, 662)
+        MainDialog.resize(543, 644)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -624,7 +624,7 @@ class Ui_MainDialog(object):
         self.further_settings2_gb.setTitle(_translate("MainDialog", "Further settings"))
         self.hdmi_drive1_cb.setText(_translate("MainDialog", "Force audio output in DMT modes"))
         self.hdmi_force_edid_audio1_cb.setText(_translate("MainDialog", "Assume display supports audio (partial EDID override)"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.second_display_tab), _translate("MainDialog", "Second display"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.second_display_tab), _translate("MainDialog", "Second Display"))
         self.main_interfaces_gb.setTitle(_translate("MainDialog", "Main interfaces"))
         self.spi_cb.setToolTip(_translate("MainDialog", "<html><head/><body><p><span style=\" font-weight:600;\">Enable SPI</span></p><p>When checked, the RPi\'s SPI (Serial Peripheral Interface) will be enabled.</p></body></html>"))
         self.spi_cb.setText(_translate("MainDialog", "Enable SPI"))
@@ -651,8 +651,8 @@ class Ui_MainDialog(object):
         self.overclock3_rb.setText(_translate("MainDialog", "Extreme (2000MHz CPU, 600MHz GPU, +0.15V)"))
         self.overclock4_rb.setText(_translate("MainDialog", "Custom (Settings in config.txt not overridden)"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainDialog", "Pi4 Tuning"))
-        self.layout_editor_pb.setToolTip(_translate("MainDialog", "<html><head/><body><p><span style=\" font-weight:600;\">Launch screen layout editor</span></p><p>This button starts the <span style=\" font-weight:600;\">arandr</span> program, which you can use to specify how your (possibly dual-monitor) display is laid out (horizontally stacked, vertically stacked, rotated <span style=\" font-style:italic;\">etc</span>.). You can also use this program to change the <span style=\" font-style:italic;\">resolution</span> of the attached HDMI display(s), without rebooting (provided the desired resolution is one the target display reported as being supported within the selected-at-boot HDMI group (CEA or DMT)).</p><p>You can <span style=\" font-weight:600;\">save</span> your changes within the arandr program to a script file. If you do so to the location <span style=\" font-style:italic;\">~/.screenlayout/default.sh</span>, they will automatically be applied for you each login.</p><p>The arandr program can also be started via the menu (it lives at <span style=\" font-family:\'monospace\';\">Applications</span> → <span style=\" font-family:\'monospace\';\">Settings</span> → <span style=\" font-family:\'monospace\';\">ARandR</span>).</p></body></html>"))
-        self.layout_editor_pb.setText(_translate("MainDialog", "Launch screen layout editor"))
+        self.layout_editor_pb.setToolTip(_translate("MainDialog", "<html><head/><body><p><span style=\" font-weight:600;\">Launch Screen Layout Editor</span></p><p>This button starts the <span style=\" font-weight:600;\">arandr</span> program, which you can use to specify how your (possibly dual-monitor) display is laid out (horizontally stacked, vertically stacked, rotated <span style=\" font-style:italic;\">etc</span>.). You can also use this program to change the <span style=\" font-style:italic;\">resolution</span> of the attached HDMI display(s), without rebooting (provided the desired resolution is one the target display reported as being supported within the selected-at-boot HDMI group (CEA or DMT)).</p><p>You can <span style=\" font-weight:600;\">save</span> your changes within the arandr program to a script file. If you do so to the location <span style=\" font-style:italic;\">~/.screenlayout/default.sh</span>, they will automatically be applied for you each login.</p><p>The arandr program can also be started via the menu (it lives at <span style=\" font-family:\'monospace\';\">Applications</span> → <span style=\" font-family:\'monospace\';\">Settings</span> → <span style=\" font-family:\'monospace\';\">ARandR</span>).</p></body></html>"))
+        self.layout_editor_pb.setText(_translate("MainDialog", "Launch Screen Layout Editor"))
 
 
 from pyconfig_gen import pyconfig_gen_rc
