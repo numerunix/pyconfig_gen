@@ -184,7 +184,7 @@ class MainDialog(QDialog):
         self.hdmi_mode1 = v if (self.hdmi_group1 == 1 and 0 <= v <= 59) or \
             (self.hdmi_group1 == 2 and 0 <= v <= 86) else 0
         v = get_config_var("dtoverlay=vc4-", self.tmp_pathname,
-                           None, False)
+                           "", False)
         m = find_vc4_and_cma.match(v)
         if m:
             if m.group(1) == "fkms-v3d":
