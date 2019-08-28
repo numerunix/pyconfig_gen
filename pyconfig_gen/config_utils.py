@@ -300,10 +300,12 @@ def get_valid_modes(target, base_mode_txt, use_fake_data = False, hdmi_index = 0
     # we begin by finding the HDMI display number corresponding to the given index
     if use_fake_data and Path(f"/usr/share/{app_name()}/tvservice_output").is_dir():
         output= subprocess.run(["cat", f"/usr/share/{app_name()}/tvservice_output/list.txt"],
-                               stdout=subprocess.PIPE).stdout.decode('utf-8')
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.DEVNULL).stdout.decode('utf-8')
     else:
         output= subprocess.run(["tvservice", "-l"],
-                               stdout=subprocess.PIPE).stdout.decode('utf-8')
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.DEVNULL).stdout.decode('utf-8')
     m = find_display.search(output)
     if m:
         device_id = int(m.group(1))
@@ -311,10 +313,12 @@ def get_valid_modes(target, base_mode_txt, use_fake_data = False, hdmi_index = 0
         device_id = 999
     if use_fake_data and Path(f"/usr/share/{app_name()}/tvservice_output").is_dir():
         output= subprocess.run(["cat", f"/usr/share/{app_name()}/tvservice_output/{target.lower()}{hdmi_index}.txt"],
-                               stdout=subprocess.PIPE).stdout.decode('utf-8').splitlines()
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.DEVNULL).stdout.decode('utf-8').splitlines()
     else:
         output= subprocess.run(["tvservice", "-v", str(device_id), "-m", target],
-                               stdout=subprocess.PIPE).stdout.decode('utf-8').splitlines()
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.DEVNULL).stdout.decode('utf-8').splitlines()
     valid_modes = []
     valid_modes_txt = []
     modes_found = 0
@@ -359,7 +363,8 @@ def get_wifi_country_list():
 
 def pid_of_process(pname):
     ret = subprocess.run(["pgrep", "-x", pname],
-                               stdout=subprocess.PIPE)
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.DEVNULL)
     if ret.returncode == 1:
         return 0
     else:
