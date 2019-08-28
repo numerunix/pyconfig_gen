@@ -21,6 +21,7 @@ CONFIG_TBC_PATHNAME = "/boot/config.txt.tbc"
 CONFIG_REJ_PATHNAME = "/boot/config.txt.rej"
 CONFIG_OLD_PATHNAME = "/boot/config.txt.old"
 WIFI_REGDOM_PATHNAME = "/etc/conf.d/rpi3-wifi-regdom"
+WIFI_MODPROBE_PATHNAME = "/etc/modprobe.d/rpi3-wifi-regdom.conf"
 
 HDMI_BASE_MODE_TXT = "Auto-detect from EDID"
 BREAK_REBOOT_NOTIFIED = "break_reboot_notified"
@@ -630,6 +631,12 @@ class MainDialog(QDialog):
         shutil.copyfile(self.tmp_pathname, CONFIG_PATHNAME)
         os.remove(self.tmp_pathname)
         shutil.copyfile(self.tmp_regdom_pathname, WIFI_REGDOM_PATHNAME)
+        # reflect in module settings too
+        subprocess.run(f"[[ -s \"{WIFI_REGDOM_PATHNAME}\" ]] && " +
+                       f"sed -i 's#ieee80211_regdom=.*$#" +
+                       f"ieee80211_regdom=\"{self.wifi_regdom}\"#g' " +
+                       f"\"{WIFI_MODPROBE_PATHNAME}\"",
+                       shell=True)
         os.remove(self.tmp_regdom_pathname)
 
         if self.save_lng:
