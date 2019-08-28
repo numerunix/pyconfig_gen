@@ -626,9 +626,13 @@ class MainDialog(QDialog):
         self.initial_update()
 
     def do_save_state(self):
-        if self.save_lng:
-            shutil.copyfile(CONFIG_PATHNAME, CONFIG_LNG_PATHNAME)
-        shutil.copyfile(self.tmp_pathname, CONFIG_PATHNAME)
+        cdm = config_files_differ_materially(self.tmp_pathname,
+                                             CONFIG_PATHNAME,
+                                             self.use_fake_data)
+        if cdm:
+            if self.save_lng:
+                shutil.copyfile(CONFIG_PATHNAME, CONFIG_LNG_PATHNAME)
+            shutil.copyfile(self.tmp_pathname, CONFIG_PATHNAME)
         os.remove(self.tmp_pathname)
         shutil.copyfile(self.tmp_regdom_pathname, WIFI_REGDOM_PATHNAME)
         # reflect in module settings too
@@ -640,9 +644,10 @@ class MainDialog(QDialog):
         os.remove(self.tmp_regdom_pathname)
 
         if self.save_lng:
-            # make sure /boot/config.txt.lng has the newer mtime
-            time.sleep(0.1)
-            os.utime(CONFIG_LNG_PATHNAME, None) # touch, essentially
+            if cdm:
+                # make sure /boot/config.txt.lng has the newer mtime
+                time.sleep(0.1)
+                os.utime(CONFIG_LNG_PATHNAME, None) # touch, essentially
             return(True)
         else:
             # check if, as a result of multiple edits without reboot,
