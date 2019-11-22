@@ -91,6 +91,7 @@ class MainDialog(QDialog):
     dtparam_audio = None
     dtoverlay_disable_bt = None
     dtparam_camera = None
+    hdmi_4kp60 = None
 
     valid_cea_modes = []
     valid_cea_modes_txt = []
@@ -140,6 +141,8 @@ class MainDialog(QDialog):
     overclock_bg = None
     overclock_level = None
 
+    dtoverlay_gpio_fan = None
+    gpio_fan_trigger = None
 
     # utilities -----------------------------------------------------
 
@@ -289,7 +292,22 @@ class MainDialog(QDialog):
         v = v.replace('"', '')
         v = v.replace("'", "")
         self.wifi_regdom = v
-        
+
+        # Pimoroni fan shim
+        v = get_config_var("dtoverlay=gpio-fan,gpiopin=18,temp=@pi4", self.tmp_pathname)
+        self.dtoverlay_gpio_fan = v is not None
+        if v is None:
+            self.gpio_fan_trigger = 65000
+        else:
+            self.gpio_fan_trigger = v
+        # force sane defaults
+        if self.gpio_fan_trigger < 45000 or self.gpio_fan_trigger > 75000:
+            self.gpio_fan_trigger = 65000
+
+        # Pi-4 specific display settings
+        v = get_config_var("hdmi_enable_4kp60@pi4", self.tmp_pathname, 0)
+        self.hdmi_4kp60 = (v == 1)
+            
     def dirty_check(self):
         if config_files_differ_materially(self.tmp_pathname, CONFIG_PATHNAME,
                                           print_debug = self.use_fake_data) or \
@@ -387,6 +405,10 @@ class MainDialog(QDialog):
         else:
             self.ui.wifi_country_code_cb.setCurrentIndex(0)
         self.overclock_bg.button(self.overclock_level).setChecked(True)
+        self.ui.pimoroni_gb.setChecked(self.dtoverlay_gpio_fan)
+        self.ui.fan_temps_hs.setValue(self.gpio_fan_trigger/1000)
+        self.ui.fan_temps_lb.setText(f"{int(self.gpio_fan_trigger/1000)}°C (off at {int(self.gpio_fan_trigger/1000 - 10)}°C)")
+        self.ui.pi4_4kp60_cb.setChecked(self.hdmi_4kp60)
         
         self.dirty_check()
 
@@ -430,7 +452,10 @@ class MainDialog(QDialog):
         self.dtoverlay_disable_bt = not self.ui.bluetooth_cb.isChecked()
         self.wifi_regdom = self.country_list[self.ui.wifi_country_code_cb.currentIndex()][0:2]
         self.overclock_level = self.overclock_bg.checkedId()
-
+        self.dtoverlay_gpio_fan = self.ui.pimoroni_gb.isChecked()
+        self.gpio_fan_trigger = self.ui.fan_temps_hs.value() * 1000
+        self.hdmi_4kp60 = self.ui.pi4_4kp60_cb.isChecked()
+        
     def populate_config_from_state(self, is_initial = False):
         if self.dtoverlay_vc4 == 2:
             comment_config_var("dtoverlay=vc4-", self.tmp_pathname)
@@ -539,23 +564,23 @@ class MainDialog(QDialog):
                                       0, self.tmp_pathname)
 
         if self.dtparam_spi:
-            set_config_var("dtparam=spi=", "on", self.tmp_pathname, "off", False)
+            set_config_var("dtparam=spi=", "on", self.tmp_pathname, True, False)
         else:
             comment_config_var("dtparam=spi=", self.tmp_pathname)
         if self.dtparam_i2c:
-            set_config_var("dtparam=i2c_arm=", "on", self.tmp_pathname, "off", False)
+            set_config_var("dtparam=i2c_arm=", "on", self.tmp_pathname, True, False)
         else:
             comment_config_var("dtparam=i2c_arm=", self.tmp_pathname)
         if self.dtparam_i2s:
-            set_config_var("dtparam=i2s=", "on", self.tmp_pathname, "off", False)
+            set_config_var("dtparam=i2s=", "on", self.tmp_pathname, True, False)
         else:
             comment_config_var("dtparam=i2s=", self.tmp_pathname)
         if self.dtparam_audio:
-            set_config_var("dtparam=audio=", "on", self.tmp_pathname, "off", False)
+            set_config_var("dtparam=audio=", "on", self.tmp_pathname, True, False)
         else:
             comment_config_var("dtparam=audio=", self.tmp_pathname)
         if self.dtoverlay_disable_bt:
-            set_config_var("dtoverlay=pi3-disable-bt", "", self.tmp_pathname, "off", False)
+            set_config_var("dtoverlay=pi3-disable-bt", "", self.tmp_pathname, True, False)
         else:
             comment_config_var("dtoverlay=pi3-disable-bt", self.tmp_pathname)
         set_or_comment_config_var("start_x",
@@ -579,6 +604,15 @@ class MainDialog(QDialog):
         set_config_var("WIFI_REGDOM", '"' + self.wifi_regdom + '"',
                        self.tmp_regdom_pathname, True, False)
 
+        if self.dtoverlay_gpio_fan:
+            set_config_var("dtoverlay=gpio-fan,gpiopin=18,temp=@pi4",
+                           self.gpio_fan_trigger, self.tmp_pathname)
+        else:
+            comment_config_var("dtoverlay=gpio-fan,gpiopin=18,temp=@pi4", self.tmp_pathname)
+
+        set_or_comment_config_var("hdmi_enable_4kp60@pi4",
+                                      1 if self.hdmi_4kp60 else 0,
+                                      0, self.tmp_pathname)
 
     def update_everything(self):
         if not self.in_update:

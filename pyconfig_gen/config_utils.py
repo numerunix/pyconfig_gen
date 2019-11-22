@@ -207,7 +207,7 @@ def set_or_comment_config_var(key, value, default, path, check_first = True):
 
 def config_files_differ_materially(path1, path2, print_debug = False):
     # return True iff sorted, space-stripped non-commment lines differ
-    find_uncommented_key=re.compile("^\s*([^#=,]+)([=,][^\n]*)\s*$")
+    find_uncommented_key=re.compile("^\s*([^#=,]+.*)(=[^\n]*)\s*$")
     find_filter=re.compile(f"^\s*\[([^[]+)\]")
     current_filt="all"
     in_subgroup = False

@@ -601,6 +601,28 @@
         </widget>
        </item>
        <item>
+        <widget class="QGroupBox" name="pi4_display_gb">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Pi4 display settings&lt;/span&gt;&lt;/p&gt;&lt;p&gt;These settings only apply to the RPi4, and have no effect when booted on an RPi3.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="title">
+          <string>Pi4 display settings</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_15">
+          <item>
+           <widget class="QCheckBox" name="pi4_4kp60_cb">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Enable 4Kp60 output on HDMI0&lt;/span&gt;&lt;/p&gt;&lt;p&gt;By default, when connected to a 4K monitor, the RPi4B will select a 30Hz refresh rate. Check this box to enable use of a 60Hz refresh rate on HDMI0.&lt;/p&gt;&lt;p&gt;Note that this will increase both the power consumption and running temperature of the RPi4. It is not possible to output 4Kp60 on both HDMI ports simultaneously.&lt;/p&gt;&lt;p&gt;This option has no effect on an RPi3.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>Enable 4Kp60 output on HDMI0</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
         <spacer name="verticalSpacer_3">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -608,7 +630,7 @@
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
-           <height>40</height>
+           <height>5</height>
           </size>
          </property>
         </spacer>
@@ -1086,9 +1108,9 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_10">
        <item>
-        <widget class="QGroupBox" name="groupBox">
+        <widget class="QGroupBox" name="overclocking_gb">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Overclocking&lt;/span&gt;&lt;/p&gt;&lt;p&gt;It is possible to &lt;span style=&quot; font-style:italic;&quot;&gt;overclock&lt;/span&gt; the Pi4 without voiding your warranty. On the image as shipped, no overclocking is set, but you can use these radio buttons to select a more aggressive profile. Overclocking generally means that applications will run more quickly (although this will vary from case to case). The settings below have no effect on a Pi3.&lt;/p&gt;&lt;p&gt;There is a risk that your system will fail to boot at the faster profiles - if so, just comment out the arm&lt;span style=&quot; font-style:italic;&quot;&gt;_freq&lt;/span&gt; and &lt;span style=&quot; font-style:italic;&quot;&gt;gpu_freq&lt;/span&gt; settings in &lt;span style=&quot; font-style:italic;&quot;&gt;/boot/config.txt&lt;/span&gt;, and try again.&lt;/p&gt;&lt;p&gt;Most Pi4s should boot fine with the &amp;quot;Mild&amp;quot; or &amp;quot;Mid&amp;quot; overclocking settings. Your system will use more power, and run hotter with overclocking in use, so an official power supply, and possibly some active cooling, may be necessary to fully exploit the increased performance (since the system will automatically 'throttle' to prevent damage should the temperature get too high).&lt;/p&gt;&lt;p&gt;For avoidance of doubt, none of the below settings set&lt;span style=&quot; font-style:italic;&quot;&gt; force_turbo=1&lt;/span&gt;, nor do they set an &lt;span style=&quot; font-style:italic;&quot;&gt;over_voltage&amp;gt;6&lt;/span&gt; (&amp;gt; +0.15V), so per current RPF advice should not affect your warranty.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;NB: &lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;the above notwithstanding, use settings higher than &amp;quot;None&amp;quot; at your own risk!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Overclocking&lt;/span&gt;&lt;/p&gt;&lt;p&gt;It is possible to &lt;span style=&quot; font-style:italic;&quot;&gt;overclock&lt;/span&gt; the Pi4 without voiding your warranty. On the image as shipped, no overclocking is set, but you can use these radio buttons to select a more aggressive profile. Overclocking generally means that applications will run more quickly (although this will vary from case to case). The settings below have no effect on a Pi3.&lt;/p&gt;&lt;p&gt;There is a risk that your system will fail to boot, or exhibit instability once booted, at the faster profiles - if so, just comment out the arm&lt;span style=&quot; font-style:italic;&quot;&gt;_freq&lt;/span&gt; and &lt;span style=&quot; font-style:italic;&quot;&gt;gpu_freq&lt;/span&gt; settings in &lt;span style=&quot; font-style:italic;&quot;&gt;/boot/config.txt&lt;/span&gt;, and try again.&lt;/p&gt;&lt;p&gt;Most Pi4s should boot fine with the &amp;quot;Mild&amp;quot; or &amp;quot;Mid&amp;quot; overclocking settings. Your system will use more power, and run hotter with overclocking in use, so an official power supply, and possibly some active cooling, may be necessary to fully exploit the increased performance (since the system will automatically 'throttle' to prevent damage should the temperature get too high).&lt;/p&gt;&lt;p&gt;For avoidance of doubt, none of the below settings set&lt;span style=&quot; font-style:italic;&quot;&gt; force_turbo=1&lt;/span&gt;, nor do they set an &lt;span style=&quot; font-style:italic;&quot;&gt;over_voltage&amp;gt;6&lt;/span&gt; (&amp;gt; +0.15V), so per current RPF advice should not affect your warranty.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;NB: &lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;the above notwithstanding, use settings higher than &amp;quot;None&amp;quot; at your own risk!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="title">
           <string>Overclocking</string>
@@ -1141,6 +1163,84 @@
          <zorder>overclock2_rb</zorder>
          <zorder>overclock0_rb</zorder>
          <zorder>overclock4_rb</zorder>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="pimoroni_gb">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Pimoroni Fan SHIM&lt;/span&gt;&lt;/p&gt;&lt;p&gt;The RPi4 can run somewhat hot under heavy load, and in the absence of active cooling, the CPU will throttle back automatically at 80°C, lowering its performance to stay within a safe thermal operating range.&lt;/p&gt;&lt;p&gt;One popular third-party add-on to counter this effect is the Fan SHIM from Pimoroni. This clips onto the GPIO header, without soldering.&lt;/p&gt;&lt;p&gt;If you have one of these daughterboards fitted to your RPi4, click this checkbox to activate it, and use the slider to set the SoC temperature at which the fan will spin up. The driver has a built-in hysteresis, which will automatically turn the fan off again at 10°C below this setpoint.&lt;/p&gt;&lt;p&gt;These settings have no effect if booted on an RPi3.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="title">
+          <string>Pimoroni Fan SHIM</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_10">
+          <item>
+           <widget class="QLabel" name="start_fan_lb">
+            <property name="text">
+             <string>Start fan at:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSlider" name="fan_temps_hs">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>200</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="minimum">
+             <number>45</number>
+            </property>
+            <property name="maximum">
+             <number>75</number>
+            </property>
+            <property name="singleStep">
+             <number>5</number>
+            </property>
+            <property name="value">
+             <number>65</number>
+            </property>
+            <property name="tracking">
+             <bool>true</bool>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="tickPosition">
+             <enum>QSlider::NoTicks</enum>
+            </property>
+            <property name="tickInterval">
+             <number>5</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="fan_temps_lb">
+            <property name="text">
+             <string>65°C (off at 55°C)</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
@@ -1274,8 +1374,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>374</x>
-     <y>397</y>
+     <x>397</x>
+     <y>497</y>
     </hint>
     <hint type="destinationlabel">
      <x>552</x>
@@ -1290,8 +1390,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>181</x>
-     <y>316</y>
+     <x>299</x>
+     <y>380</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -1306,8 +1406,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>113</x>
-     <y>61</y>
+     <x>203</x>
+     <y>96</y>
     </hint>
     <hint type="destinationlabel">
      <x>400</x>
@@ -1322,8 +1422,8 @@
    <slot>hdmi_group_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>485</x>
-     <y>130</y>
+     <x>510</x>
+     <y>182</y>
     </hint>
     <hint type="destinationlabel">
      <x>399</x>
@@ -1338,8 +1438,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>190</x>
-     <y>61</y>
+     <x>339</x>
+     <y>96</y>
     </hint>
     <hint type="destinationlabel">
      <x>396</x>
@@ -1354,8 +1454,8 @@
    <slot>gui_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>113</x>
-     <y>83</y>
+     <x>211</x>
+     <y>124</y>
     </hint>
     <hint type="destinationlabel">
      <x>301</x>
@@ -1370,8 +1470,8 @@
    <slot>gui_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>62</x>
-     <y>83</y>
+     <x>74</x>
+     <y>124</y>
     </hint>
     <hint type="destinationlabel">
      <x>298</x>
@@ -1386,8 +1486,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>492</x>
-     <y>155</y>
+     <x>510</x>
+     <y>210</y>
     </hint>
     <hint type="destinationlabel">
      <x>397</x>
@@ -1418,8 +1518,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>131</x>
-     <y>316</y>
+     <x>219</x>
+     <y>380</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -1434,8 +1534,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>77</x>
-     <y>316</y>
+     <x>130</x>
+     <y>380</y>
     </hint>
     <hint type="destinationlabel">
      <x>476</x>
@@ -1450,8 +1550,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>126</x>
-     <y>249</y>
+     <x>228</x>
+     <y>321</y>
     </hint>
     <hint type="destinationlabel">
      <x>472</x>
@@ -1466,8 +1566,8 @@
    <slot>hdmi_ignore_edid_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>423</x>
-     <y>207</y>
+     <x>458</x>
+     <y>291</y>
     </hint>
     <hint type="destinationlabel">
      <x>476</x>
@@ -1482,8 +1582,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>394</x>
-     <y>190</y>
+     <x>429</x>
+     <y>265</y>
     </hint>
     <hint type="destinationlabel">
      <x>470</x>
@@ -1498,8 +1598,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>240</x>
-     <y>316</y>
+     <x>398</x>
+     <y>380</y>
     </hint>
     <hint type="destinationlabel">
      <x>473</x>
@@ -1514,8 +1614,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>279</x>
-     <y>380</y>
+     <x>302</x>
+     <y>471</y>
     </hint>
     <hint type="destinationlabel">
      <x>546</x>
@@ -1530,8 +1630,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>151</x>
-     <y>70</y>
+     <x>174</x>
+     <y>122</y>
     </hint>
     <hint type="destinationlabel">
      <x>558</x>
@@ -1546,8 +1646,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>350</x>
-     <y>87</y>
+     <x>373</x>
+     <y>148</y>
     </hint>
     <hint type="destinationlabel">
      <x>525</x>
@@ -1562,8 +1662,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>433</x>
-     <y>121</y>
+     <x>456</x>
+     <y>200</y>
     </hint>
     <hint type="destinationlabel">
      <x>410</x>
@@ -1578,8 +1678,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>201</x>
-     <y>104</y>
+     <x>224</x>
+     <y>174</y>
     </hint>
     <hint type="destinationlabel">
      <x>550</x>
@@ -1594,8 +1694,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>292</x>
-     <y>138</y>
+     <x>315</x>
+     <y>226</y>
     </hint>
     <hint type="destinationlabel">
      <x>554</x>
@@ -1610,8 +1710,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>267</x>
-     <y>61</y>
+     <x>475</x>
+     <y>96</y>
     </hint>
     <hint type="destinationlabel">
      <x>549</x>
@@ -1626,8 +1726,8 @@
    <slot>camera_cb_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>142</x>
-     <y>155</y>
+     <x>165</x>
+     <y>252</y>
     </hint>
     <hint type="destinationlabel">
      <x>130</x>
@@ -1642,8 +1742,8 @@
    <slot>gui_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>43</x>
-     <y>68</y>
+     <x>67</x>
+     <y>123</y>
     </hint>
     <hint type="destinationlabel">
      <x>166</x>
@@ -1658,8 +1758,8 @@
    <slot>gui_changed()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>98</x>
-     <y>70</y>
+     <x>223</x>
+     <y>123</y>
     </hint>
     <hint type="destinationlabel">
      <x>2</x>
@@ -1674,8 +1774,8 @@
    <slot>hdmi_group1_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>133</x>
-     <y>118</y>
+     <x>242</x>
+     <y>181</y>
     </hint>
     <hint type="destinationlabel">
      <x>-4</x>
@@ -1690,8 +1790,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>81</x>
-     <y>147</y>
+     <x>190</x>
+     <y>221</y>
     </hint>
     <hint type="destinationlabel">
      <x>1</x>
@@ -1706,8 +1806,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>84</x>
-     <y>182</y>
+     <x>131</x>
+     <y>282</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -1722,8 +1822,8 @@
    <slot>hdmi_ignore_edid1_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>166</x>
-     <y>200</y>
+     <x>213</x>
+     <y>308</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -1738,8 +1838,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>110</x>
-     <y>231</y>
+     <x>234</x>
+     <y>341</y>
     </hint>
     <hint type="destinationlabel">
      <x>-3</x>
@@ -1754,8 +1854,8 @@
    <slot>gui_bool_changed(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>32</x>
-     <y>250</y>
+     <x>67</x>
+     <y>424</y>
     </hint>
     <hint type="destinationlabel">
      <x>-3</x>
@@ -1770,8 +1870,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>56</x>
-     <y>278</y>
+     <x>130</x>
+     <y>412</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -1786,8 +1886,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>114</x>
-     <y>279</y>
+     <x>219</x>
+     <y>412</y>
     </hint>
     <hint type="destinationlabel">
      <x>-13</x>
@@ -1802,8 +1902,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>160</x>
-     <y>276</y>
+     <x>299</x>
+     <y>412</y>
     </hint>
     <hint type="destinationlabel">
      <x>1</x>
@@ -1818,8 +1918,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>224</x>
-     <y>278</y>
+     <x>398</x>
+     <y>412</y>
     </hint>
     <hint type="destinationlabel">
      <x>1</x>
@@ -1834,8 +1934,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>61</x>
-     <y>588</y>
+     <x>96</x>
+     <y>491</y>
     </hint>
     <hint type="destinationlabel">
      <x>-4</x>
@@ -1850,8 +1950,8 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>129</x>
-     <y>604</y>
+     <x>164</x>
+     <y>517</y>
     </hint>
     <hint type="destinationlabel">
      <x>-3</x>
@@ -1866,8 +1966,8 @@
    <slot>layout_editor_button_clicked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>515</x>
-     <y>642</y>
+     <x>172</x>
+     <y>633</y>
     </hint>
     <hint type="destinationlabel">
      <x>520</x>
@@ -1882,12 +1982,60 @@
    <slot>gui_value_changed(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>112</x>
-     <y>72</y>
+     <x>245</x>
+     <y>124</y>
     </hint>
     <hint type="destinationlabel">
      <x>-17</x>
      <y>139</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pimoroni_gb</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainDialog</receiver>
+   <slot>gui_bool_changed(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>62</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>248</x>
+     <y>625</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fan_temps_hs</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainDialog</receiver>
+   <slot>gui_value_changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>354</x>
+     <y>279</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>429</x>
+     <y>621</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pi4_4kp60_cb</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>MainDialog</receiver>
+   <slot>gui_value_changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>280</x>
+     <y>556</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>265</x>
+     <y>614</y>
     </hint>
    </hints>
   </connection>
