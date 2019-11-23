@@ -147,7 +147,11 @@ class MainDialog(QDialog):
     # utilities -----------------------------------------------------
 
     def make_tmp_copy_of_config(self):
-        self.tmp_pathname=setup_tmpfile_copy(CONFIG_PATHNAME)
+        # populate GUI with to-be-confirmed state if present
+        if Path(CONFIG_TBC_PATHNAME).is_file():
+            self.tmp_pathname=setup_tmpfile_copy(CONFIG_TBC_PATHNAME)
+        else:
+            self.tmp_pathname=setup_tmpfile_copy(CONFIG_PATHNAME)
         self.tmp_regdom_pathname=setup_tmpfile_copy(WIFI_REGDOM_PATHNAME)
 
     def cleanup_tmp_copy_of_config(self):
