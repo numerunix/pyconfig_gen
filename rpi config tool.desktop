@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=RPI Config Tool
+Exec=/usr/sbin/pyconfig_gen
+Comment=Configurazione delle impostazioni del raspberry
+Terminal=false
+Icon=/usr/share/pixmaps/pyconfig_gen.png
+Type=Application
+Name[it_IT]=rpi config tool.desktop
