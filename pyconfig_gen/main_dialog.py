@@ -1120,8 +1120,7 @@ without (e.g.) a visible display.</p>
         self.resize(0, 0) # shrink to minimum size given fonts etc.
         self.check_running_as_root()
         # save off the pre-sudo UID and GID
-        (self.original_uid, self.original_gid) = (int(os.environ["SUDO_UID"]),
-                                                  int(os.environ["SUDO_GID"]))
+        (self.original_uid, self.original_gid) = (0,0)
         self.original_home = pwd.getpwuid(self.original_uid).pw_dir
         self.original_path = os.environ["PATH"]
         self.original_display = os.environ["DISPLAY"]
@@ -1160,3 +1159,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

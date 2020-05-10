@@ -303,7 +303,7 @@ def get_valid_modes(target, base_mode_txt, use_fake_data = False, hdmi_index = 0
                                stdout=subprocess.PIPE,
                                stderr=subprocess.DEVNULL).stdout.decode('utf-8')
     else:
-        output= subprocess.run(["tvservice", "-l"],
+        output= subprocess.run(["/opt/vc/bin/tvservice", "-l"],
                                stdout=subprocess.PIPE,
                                stderr=subprocess.DEVNULL).stdout.decode('utf-8')
     m = find_display.search(output)
@@ -316,7 +316,7 @@ def get_valid_modes(target, base_mode_txt, use_fake_data = False, hdmi_index = 0
                                stdout=subprocess.PIPE,
                                stderr=subprocess.DEVNULL).stdout.decode('utf-8').splitlines()
     else:
-        output= subprocess.run(["tvservice", "-v", str(device_id), "-m", target],
+        output= subprocess.run(["/opt/vc/bin/tvservice", "-v", str(device_id), "-m", target],
                                stdout=subprocess.PIPE,
                                stderr=subprocess.DEVNULL).stdout.decode('utf-8').splitlines()
     valid_modes = []
@@ -384,3 +384,4 @@ def bring_window_to_front(pid):
     subprocess.run("wmctrl -ia $(wmctrl -lp | awk -vpid=" + str(pid) + \
                    " '$3==pid {print $1; exit}')",
                    shell=True)
+
